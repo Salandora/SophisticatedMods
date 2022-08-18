@@ -1,4 +1,5 @@
 rootProject.name = '1.18'
+include 'SophisticatedCore'
 include 'SophisticatedBackpacks'
 include 'SophisticatedStorage'
 

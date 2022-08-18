@@ -6,3 +6,7 @@
 	path = SophisticatedBackpacks
 	url = https://github.com/P3pp3rF1y/SophisticatedBackpacks.git
 	branch = 1.18.x-dev
+[submodule "SophisticatedCore"]
+	path = SophisticatedCore
+	url = https://github.com/P3pp3rF1y/SophisticatedCore.git
+	branch = 1.18.x-dev
