@@ -55,6 +55,35 @@ minecraft {
 //            properties 'mixin.env.disableRefMap': 'true'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            jvmArg '-XX:+AllowEnhancedClassRedefinition'
+            jvmArg '-XX:HotswapAgent=fatjar'
+
+            // Recommended logging data for a userdev environment
+            // property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            // property 'forge.logging.console.level', 'debug'
+
+            mods {
+                SophisticatedCore {
+                    source project(':SophisticatedCore').sourceSets.main
+                }
+                SophisticatedBackpacks {
+                    source project(':SophisticatedBackpacks').sourceSets.main
+                }
+                SophisticatedStorage {
+                    source project(':SophisticatedStorage').sourceSets.main
+                }
+            }
+        }
+
+        client2 {
+            workingDirectory project.file('run')
+//            properties 'mixin.env.disableRefMap': 'true'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            jvmArg '-XX:+AllowEnhancedClassRedefinition'
+            jvmArg '-XX:HotswapAgent=fatjar'
 
             // Recommended logging data for a userdev environment
             // property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -80,6 +109,8 @@ minecraft {
 //            properties 'mixin.env.disableRefMap': 'true'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            jvmArg '-XX:+AllowEnhancedClassRedefinition'
+            jvmArg '-XX:HotswapAgent=fatjar'
 
             // Recommended logging data for a userdev environment
             // property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
