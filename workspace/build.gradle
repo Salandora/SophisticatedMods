@@ -78,12 +78,13 @@ minecraft {
         }
 
         client2 {
-            workingDirectory project.file('run')
+            workingDirectory project.file('run2')
 //            properties 'mixin.env.disableRefMap': 'true'
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             jvmArg '-XX:+AllowEnhancedClassRedefinition'
             jvmArg '-XX:HotswapAgent=fatjar'
+            args 'username', 'Dev2'
 
             // Recommended logging data for a userdev environment
             // property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -184,6 +185,7 @@ dependencies {
 //    runtimeOnly fg.deobf("curse.maven:silentlib-242998:3708359")
 //    runtimeOnly fg.deobf("curse.maven:silentgear-297039:3811128")
     runtimeOnly fg.deobf("curse.maven:mekanism-268560:3833669")
+    runtimeOnly fg.deobf("curse.maven:corailtombstone-243707:4034714")
 //    runtimeOnly fg.deobf("curse.maven:carryon-274259:3674344")
     runtimeOnly fg.deobf("curse.maven:storagedrawers-223852:3807626")
     runtimeOnly fg.deobf("curse.maven:refinedstorage-243076:3712882")
