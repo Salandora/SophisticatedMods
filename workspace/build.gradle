@@ -192,6 +192,9 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:simplestoragenetwork-268495:3868680")
     runtimeOnly fg.deobf("curse.maven:shetiphiancore-71738:3832652")
     runtimeOnly fg.deobf("curse.maven:endertanks-59613:3832663")
+    runtimeOnly fg.deobf("curse.maven:frameddrawers-376351:3808242")
+    runtimeOnly fg.deobf("curse.maven:twilightforest-227639:4337390")
+    runtimeOnly fg.deobf("curse.maven:compressium-342929:4034865")
 
     implementation project(':SophisticatedBackpacks')
     implementation project(':SophisticatedStorage')
