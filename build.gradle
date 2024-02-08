@@ -23,11 +23,6 @@ allprojects  { p ->
         minecraft("com.mojang:minecraft:$minecraft_version")
     }
 
-    // Run this task after updating minecraft to regenerate any required resources
-    tasks.register('generateResources') {
-        group = "fabric"
-    }
-
     if (p.name == "workspace") {
         return
     }
