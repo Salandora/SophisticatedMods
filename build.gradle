@@ -17,6 +17,10 @@ allprojects  { p ->
         enabled = false
     }
 
+    tasks.withType(Test).configureEach {
+        workingDir project(":workspace").relativePath("run/test_client")
+    }
+
     apply plugin: "fabric-loom"
 
     dependencies {
