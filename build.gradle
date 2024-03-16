@@ -9,7 +9,7 @@ plugins {
 }
 
 allprojects  { p ->
-    if (p == rootProject) {
+    if (p == rootProject || p.name == "workspace") {
         return
     }
 
@@ -25,10 +25,6 @@ allprojects  { p ->
 
     dependencies {
         minecraft("com.mojang:minecraft:$minecraft_version")
-    }
-
-    if (p.name == "workspace") {
-        return
     }
 
     project(":workspace") {

@@ -54,20 +54,13 @@ repositories {
     maven { url = "https://modmaven.dev" } // Jei
     maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
     maven { url = "https://www.cursemaven.com" } // Balm, CraftingTweaks
+    maven { url = "https://maven.teamresourceful.com/repository/maven-public/" } // Chipped, resourcefullib
     maven {
         name = "GitHubPackages"
         url = uri("https://maven.pkg.github.com/Salandora/sophisticatedcore")
         credentials {
             username = System.getenv("USERNAME")
             password = System.getenv("READ_PACKAGES_TOKEN")
-        }
-    }
-}
-
-configurations.configureEach {
-    resolutionStrategy.eachDependency {
-        if (requested.module.name == "fabric-loader") {
-            useVersion(loader_version)
         }
     }
 }
@@ -82,8 +75,6 @@ def setup(DependencyHandler deps) {
     deps.minecraft("com.mojang:minecraft:$minecraft_version")
     deps.mappings(loom.layered {
         it.mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$qm_version:intermediary-v2")
-        if (parchment_version != "none")
-            it.parchment("org.parchmentmc.data:parchment-$parchment_version@zip")
         it.officialMojangMappings { nameSyntheticMembers = false }
     })
     deps.modLocalRuntime("net.fabricmc:fabric-loader:$loader_version")
@@ -91,22 +82,32 @@ def setup(DependencyHandler deps) {
     deps.modLocalRuntime("net.fabricmc.fabric-api:fabric-api:$fabric_version")
 
     // Core requirements
-    deps.modLocalRuntime("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port_version}")
+    deps.modLocalRuntime("net.minecraftforge:forgeconfigapiport-fabric:${forge_config_api_port_version}")
     deps.modLocalRuntime("committee.nova.mkb.fabric:mkb-${minecraft_version}:${mkb_mod_version}")
 }
 
 def devEnv(DependencyHandler deps) {
-    deps.modLocalRuntime("dev.emi:trinkets:$trinkets_version")
+    deps.modLocalRuntime("com.terraformersmc:modmenu:$modmenu_version")
     deps.modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:$cloth_config_version")
+
+    // Create - dependencies are added transitively
+    deps.modImplementation("com.simibubi.create:create-fabric-${minecraft_version}:${create_version}")
+
     deps.modLocalRuntime("curse.maven:balm-500525:${balm_cf_file_id}")
     deps.modLocalRuntime("curse.maven:craftingtweaks-502516:${crafting_tweaks_cf_file_id}")
-    deps.modLocalRuntime("com.terraformersmc:modmenu:$modmenu_version")
-    deps.modLocalRuntime("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
-    deps.modLocalRuntime("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")
-    deps.modLocalRuntime("curse.maven:config-menus-forge-544048:${forge_config_screen_version}")
 
-    // deps.modLocalRuntime("vazkii.botania:Botania:$botania_version")
-    // deps.modLocalRuntime("vazkii.patchouli:Patchouli:$patchouli_version")
+    deps.modImplementation("curse.maven:chipped-456956:${chipped_cf_file_id}")
+    deps.modImplementation("curse.maven:resourcefullib-570073:${resourcefullib_cf_file_id}")
+//    deps.modImplementation("curse.maven:ctm-267602:${ctm_cf_file_id}")
+
+    // deps.modLocalRuntime("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
+    // deps.modLocalRuntime("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")
+    // deps.modLocalRuntime("curse.maven:config-menus-forge-544048:${forge_config_screen_version}")
+
+    deps.modLocalRuntime("vazkii.botania:Botania:$botania_version")
+    deps.modLocalRuntime("vazkii.patchouli:Patchouli:$patchouli_version")
+
+    deps.modLocalRuntime("dev.emi:trinkets:$trinkets_version")
 }
 
 def recipeViewers(DependencyHandler deps) {
@@ -155,7 +156,12 @@ loom {
 def moduleDependency(Project p) {
     dependencies {
         afterEvaluate {
-            api project(path: "${p.path}", configuration: "namedElements")
+            implementation project(path: "${p.path}", configuration: "namedElements")
+        }
+        if (p.port_lib_modules != null) {
+            for (String module in p.port_lib_modules.split(",")) {
+                modImplementation("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version")
+            }
         }
     }
 
@@ -163,3 +169,5 @@ def moduleDependency(Project p) {
         sourceSet p.sourceSets.main
     }
 }
+
+tasks.named("build") {}

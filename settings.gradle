@@ -14,5 +14,5 @@ rootProject.name = 'Sophisticated-fabric'
 
 include 'SophisticatedCore'
 include 'SophisticatedBackpacks'
-include 'SophisticatedStorage'
+//include 'SophisticatedStorage'
 include 'workspace'
