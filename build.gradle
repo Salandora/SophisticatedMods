@@ -68,25 +68,10 @@ allprojects  {
         mavenLocal()
         mavenCentral()
 
-        exclusiveContent {
-            forRepositories(
-                maven {
-                    url = uri("https://maven.pkg.github.com/Salandora/Porting-Lib")
-                    credentials {
-                        username = System.getenv("REPO_USERNAME")
-                        password = System.getenv("READ_PACKAGES_TOKEN")
-                    }
-                }
-            )
-            filter {
-                includeGroup "io.github.fabricators_of_create.Porting-Lib"
-            }
-        }
-
         maven { url = "https://maven.quiltmc.org/repository/release" } // QM
 
         maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
-        maven { url = "https://mvn.devos.one/snapshots/" } // Porting Lib, serialization-hooks
+        maven { url = "https://mvn.devos.one/releases/" } // Porting Lib, serialization-hooks
         maven { url = "https://jitpack.io/" } // for Porting Lib: Mixin Extras, Fabric ASM
         maven { // Forge Config API Port
             name = "Fuzs Mod Resources"
@@ -280,7 +265,7 @@ subprojects {
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version")
 
         modCompileOnly("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
-        modCompileOnly("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")
+        modCompileOnly("maven.modrinth:indium:${indium_version}")
 
         implementation("com.electronwill.night-config:core:$project.night_config_version")
         implementation("com.electronwill.night-config:toml:$project.night_config_version")
@@ -297,10 +282,10 @@ subprojects {
         modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
         modCompileOnly("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
 
-        // modCompileOnly("curse.maven:chipped-456956:${project.chipped_cf_file_id}")
-        // modCompileOnly("curse.maven:resourcefullib-570073:${project.resourcefullib_cf_file_id}")
+        modCompileOnly("curse.maven:chipped-456956:${project.chipped_cf_file_id}")
+        modCompileOnly("curse.maven:resourcefullib-570073:${project.resourcefullib_cf_file_id}")
 
-        // modCompileOnly("vazkii.botania:Botania:${project.botania_version}") { transitive = false }
+        modCompileOnly("vazkii.botania:Botania:${project.botania_version}") { transitive = false }
 
         // Test dependencies
         testmodImplementation sourceSets.main.output
