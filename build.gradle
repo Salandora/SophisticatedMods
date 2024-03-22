@@ -228,7 +228,7 @@ subprojects {
         }
 
         // EMI
-        modCompileOnly("dev.emi:emi-fabric:$emi_version:api")
+        modCompileOnly("dev.emi:emi-fabric:$emi_version")
         // JEI
         modCompileOnlyApi("mezz.jei:jei-$minecraft_version-common-api:$jei_version")
         modCompileOnly("mezz.jei:jei-$minecraft_version-fabric:$jei_version")
