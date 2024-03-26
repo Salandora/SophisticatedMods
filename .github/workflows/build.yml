@@ -10,6 +10,10 @@ jobs:
       image: mcr.microsoft.com/openjdk/jdk:${{ matrix.java }}
       options: --user root
     steps:
+      - name: Install git on container
+        run: |
+          apt update
+          apt install -y git
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
