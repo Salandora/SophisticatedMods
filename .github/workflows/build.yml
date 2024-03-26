@@ -40,9 +40,15 @@ jobs:
       image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
       options: --user root
     steps:
-      - uses: actions/checkout@v4
+      - name: Install git on container
+        run: |
+          apt update
+          apt install -y git
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: true
       - run: chmod +x ./gradlew
       - run: ./gradlew generateResources --stacktrace --warning-mode=fail
       - run: if [ -n "$(git status --porcelain)" ]; then exit 1; fi
