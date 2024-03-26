@@ -152,7 +152,7 @@ allprojects  {
             events "passed", "skipped", "failed"
         }
 
-        workingDir "run"
+        workingDir file("${rootDir}/run_tests")
     }
     test.dependsOn("processResources")
 
