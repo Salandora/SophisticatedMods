@@ -6,11 +6,9 @@ buildscript {
 
 plugins {
     id "fabric-loom" version "1.5-SNAPSHOT"
-
     id "io.github.p03w.machete" version "2.0.1" apply false // automatic jar compressing on build
+    id "maven-publish"
 }
-
-group = project.mod_group_id
 
 @SuppressWarnings('unused')
 def moduleDependency(Project project, List<String> depNames) {
@@ -35,6 +33,7 @@ configurations.configureEach {
 allprojects  {
     apply plugin: "fabric-loom"
 
+    group = project.mod_group_id
     base {
         archivesName = "${mod_id}"
     }
@@ -277,6 +276,24 @@ subprojects {
 
     tasks.register('printVersionName') {
         println "version: " + version
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                afterEvaluate {
+                    artifactId = base.archivesName.get()
+                }
+
+                artifact(remapJar) {
+                    builtBy(tasks.named('optimizedJar'))
+                }
+
+                artifact(sourcesJar) {
+                    builtBy(remapSourcesJar)
+                }
+            }
+        }
     }
 }
 
