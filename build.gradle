@@ -23,23 +23,22 @@ def moduleDependency(Project project, List<String> depNames) {
     }
 }
 
+configurations.configureEach {
+    resolutionStrategy {
+        // fixes loom using a loader version from a dependency
+        force("net.fabricmc:fabric-loader:$project.loader_version")
+        // this is necessary cause the 1.19.2 REI version somehow provides a version that is not for MC 1.19.2
+        force("dev.architectury:architectury-fabric:$project.architectury_version")
+    }
+}
+
 allprojects  {
     apply plugin: "fabric-loom"
-    apply plugin: "io.github.p03w.machete"
 
     base {
-        archivesName = "${mod_id}-${project.minecraft_version}"
+        archivesName = "${mod_id}"
     }
-    version = "${mod_version}${getStable()}${getBuildNumber()}"
-
-    configurations.configureEach {
-        resolutionStrategy {
-            // fixes loom using a loader version from a dependency
-            force("net.fabricmc:fabric-loader:$project.loader_version")
-            // this is necessary cause the 1.19.2 REI version somehow provides a version that is not for MC 1.19.2
-            force("dev.architectury:architectury-fabric:$project.architectury_version")
-        }
-    }
+    version = "${mod_version}+mc${project.minecraft_version}${getStable()}${getBuildNumber()}"
 
     tasks.withType(GenerateModuleMetadata).configureEach {
         enabled = false
@@ -105,32 +104,13 @@ allprojects  {
         modImplementation("net.fabricmc:fabric-loader:$project.loader_version")
         modImplementation("net.fabricmc.fabric-api:fabric-api:$project.fabric_version")
 
-        implementation(include(annotationProcessor("io.github.llamalad7:mixinextras-fabric:$project.mixinextras_version")))
-
         implementation("javax.annotation:javax.annotation-api:1.3.2")
         implementation("com.google.code.findbugs:jsr305:3.0.2")
 
         modImplementation("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") { transitive = false }
 
-        modImplementation("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
-
-        implementation("com.electronwill.night-config:core:$project.night_config_version")
-        implementation("com.electronwill.night-config:toml:$project.night_config_version")
-        modApi(include("net.minecraftforge:forgeconfigapiport-fabric:$project.forge_config_api_port_version"))
-        modApi(include("teamreborn:energy:$project.energy_version")) { transitive = false }
-
-        modImplementation("maven.modrinth:jade:${jade_version}")
-
-        modImplementation("curse.maven:malilib-303119:$project.malilib_cf_file_id")
-        modImplementation("curse.maven:litematica-308892:$project.litematica_cf_file_id")
-
-        modImplementation("curse.maven:balm-500525:${project.balm_cf_file_id}")
-        modImplementation("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
-
-        modImplementation("curse.maven:chipped-456956:${project.chipped_cf_file_id}")
-        modImplementation("curse.maven:resourcefullib-570073:${project.resourcefullib_cf_file_id}")
-
-        modCompileOnly("vazkii.botania:Botania:${project.botania_version}") { transitive = false }
+        modImplementation("com.terraformersmc:modmenu:$project.modmenu_version")
+        modImplementation("maven.modrinth:lazydfu:$project.lazy_dfu_version")
 
         // Test dependencies
         testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
@@ -158,10 +138,6 @@ allprojects  {
                 ideConfigGenerated = true
             }
         }
-
-        interfaceInjection {
-            enableDependencyInterfaceInjection = true
-        }
     }
 
     subprojects.each { p ->
@@ -179,79 +155,6 @@ allprojects  {
         workingDir "run"
     }
     test.dependsOn("processResources")
-}
-
-dependencies {
-    afterEvaluate {
-        subprojects.each {
-            api project(path: "${it.path}", configuration: "namedElements")
-        }
-    }
-
-    additionalMods(dependencies)
-}
-
-def additionalMods(DependencyHandler deps) {
-    switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
-        case "emi": deps.modLocalRuntime("dev.emi:emi-fabric:$project.emi_version"); println "EMI loaded"; break
-        case "jei": deps.modLocalRuntime("mezz.jei:jei-$project.minecraft_version-fabric:$project.jei_version"); println "JEI loaded"; break
-        case "rei": deps.modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$project.rei_version"); println "REI loaded"; break
-        case "disabled": break
-        default: println("Unknown recipe viewer specified: $project.recipe_viewer. Must be JEI, REI, EMI, or disabled.")
-    }
-
-    deps.modLocalRuntime("com.terraformersmc:modmenu:$project.modmenu_version")
-
-    deps.modLocalRuntime("maven.modrinth:lazydfu:$project.lazy_dfu_version")
-
-    // Create - dependencies are added transitively
-    deps.modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version}:${project.create_version}")
-
-    deps.modLocalRuntime("dev.emi:trinkets:$project.trinkets_version")
-    deps.modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$project.cca_version") // for Trinkets
-    deps.modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$project.cca_version") // for Trinkets
-
-    deps.modLocalRuntime("vazkii.botania:Botania:${project.botania_version}") { exclude(module: "emi") }
-    deps.modLocalRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
-
-    deps.modLocalRuntime("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
-    deps.modLocalRuntime("org.joml:joml:1.10.4")
-    deps.modLocalRuntime("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")
-}
-
-subprojects {
-    apply plugin: "maven-publish"
-
-    dependencies {
-        for (def module in port_lib_modules.split(',')) {
-            modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version"))
-        }
-
-        // EMI
-        modCompileOnly("dev.emi:emi-fabric:$emi_version")
-        // JEI
-        modCompileOnlyApi("mezz.jei:jei-$minecraft_version-common-api:$jei_version")
-        modCompileOnly("mezz.jei:jei-$minecraft_version-fabric:$jei_version")
-        // REI
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version")
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version")
-
-        modCompileOnly("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
-        modCompileOnly("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")
-    }
-
-    fabricApi {
-        configureDataGeneration()
-    }
-
-    loom {
-        runs {
-            datagen {
-                ideConfigGenerated = true
-                vmArg "-Dfabric-api.datagen.modid=$mod_id"
-            }
-        }
-    }
 
     tasks.withType(ProcessResources).configureEach {
         exclude '.cache'
@@ -273,6 +176,64 @@ subprojects {
 
         filesMatching(['fabric.mod.json', 'pack.mcmeta']) {
             expand replaceProperties + [project: project]
+        }
+    }
+}
+
+subprojects {
+    apply plugin: "maven-publish"
+    apply plugin: "io.github.p03w.machete"
+
+    dependencies {
+        implementation(include(annotationProcessor("io.github.llamalad7:mixinextras-fabric:$project.mixinextras_version")))
+
+        for (def module in port_lib_modules.split(',')) {
+            modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version"))
+        }
+
+        // EMI
+        modCompileOnly("dev.emi:emi-fabric:$emi_version")
+        // JEI
+        modCompileOnlyApi("mezz.jei:jei-$minecraft_version-common-api:$jei_version")
+        modCompileOnly("mezz.jei:jei-$minecraft_version-fabric:$jei_version")
+        // REI
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version")
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version")
+
+        /*modCompileOnly("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
+        modCompileOnly("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")*/
+
+        implementation("com.electronwill.night-config:core:$project.night_config_version")
+        implementation("com.electronwill.night-config:toml:$project.night_config_version")
+        modApi(include("net.minecraftforge:forgeconfigapiport-fabric:$project.forge_config_api_port_version"))
+        modApi(include("teamreborn:energy:$project.energy_version")) { transitive = false }
+
+        modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
+
+        modCompileOnly("maven.modrinth:jade:${jade_version}")
+
+        modCompileOnly("curse.maven:malilib-303119:$project.malilib_cf_file_id")
+        modCompileOnly("curse.maven:litematica-308892:$project.litematica_cf_file_id")
+
+        modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
+        modCompileOnly("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
+
+        modCompileOnly("curse.maven:chipped-456956:${project.chipped_cf_file_id}")
+        modCompileOnly("curse.maven:resourcefullib-570073:${project.resourcefullib_cf_file_id}")
+
+        modCompileOnly("vazkii.botania:Botania:${project.botania_version}") { transitive = false }
+    }
+
+    fabricApi {
+        configureDataGeneration()
+    }
+
+    loom {
+        runs {
+            datagen {
+                ideConfigGenerated = true
+                vmArg "-Dfabric-api.datagen.modid=$mod_id"
+            }
         }
     }
 
@@ -317,41 +278,60 @@ subprojects {
     tasks.register('printVersionName') {
         println "version: " + version
     }
+}
 
-    publishing {
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/Salandora/SophisticatedCore")
-                credentials {
-                    username = System.getenv("GITHUB_ACTOR")
-                    password = System.getenv("GITHUB_TOKEN")
-                }
-            }
-        }
-        publications {
-            mavenJava(MavenPublication) {
-                afterEvaluate {
-                    artifactId = base.archivesName.get()
-                }
+def additionalMods(DependencyHandler deps) {
+    switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
+        case "emi": deps.modLocalRuntime("dev.emi:emi-fabric:$project.emi_version"); println "EMI loaded"; break
+        case "jei": deps.modLocalRuntime("mezz.jei:jei-$project.minecraft_version-fabric:$project.jei_version"); println "JEI loaded"; break
+        case "rei": deps.modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$project.rei_version"); println "REI loaded"; break
+        case "disabled": break
+        default: println("Unknown recipe viewer specified: $project.recipe_viewer. Must be JEI, REI, EMI, or disabled.")
+    }
 
-                artifact(remapJar) {
-                    builtBy(tasks.named('optimizedJar'))
-                }
+    deps.modLocalRuntime("org.joml:joml:1.10.4")
+    deps.modLocalRuntime("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")
+    deps.modLocalRuntime("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
 
-                artifact(sourcesJar) {
-                    builtBy(remapSourcesJar)
-                }
-            }
+    // Create - dependencies are added transitively
+    deps.modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version}:${project.create_version}")
+
+    deps.modLocalRuntime("dev.emi:trinkets:$project.trinkets_version")
+    deps.modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$project.cca_version") // for Trinkets
+    deps.modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$project.cca_version") // for Trinkets
+
+    deps.modLocalRuntime("vazkii.botania:Botania:${project.botania_version}") { exclude(module: "emi") }
+    deps.modLocalRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
+
+    deps.modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
+
+    deps.modLocalRuntime("maven.modrinth:jade:${jade_version}")
+
+    deps.modLocalRuntime("curse.maven:malilib-303119:$project.malilib_cf_file_id")
+    deps.modLocalRuntime("curse.maven:litematica-308892:$project.litematica_cf_file_id")
+
+    deps.modLocalRuntime("curse.maven:balm-500525:${project.balm_cf_file_id}")
+    deps.modLocalRuntime("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
+
+    deps.modLocalRuntime("curse.maven:chipped-456956:${project.chipped_cf_file_id}")
+    deps.modLocalRuntime("curse.maven:resourcefullib-570073:${project.resourcefullib_cf_file_id}")
+}
+
+dependencies {
+    afterEvaluate {
+        subprojects.each {
+            api project(path: "${it.path}", configuration: "namedElements")
         }
     }
+
+    // additionalMods(dependencies)
 }
 
 static def getBuildNumber() {
     if (System.getenv("GITHUB_RUN_NUMBER") != null) {
-        return "." + System.getenv("GITHUB_RUN_NUMBER").toString()
+        return "-build." + System.getenv("GITHUB_RUN_NUMBER").toString()
     }
-    return ""
+    return "-local"
 }
 
 static def getStable() {
@@ -360,22 +340,3 @@ static def getStable() {
     }
     return ""
 }
-
-// Disable rootProject build, we don't need it
-assemble.enabled = false
-build.enabled = false
-check.enabled = false
-classes.enabled = false
-compileJava.enabled = false
-compileTestJava.enabled = false
-jar.enabled = false
-machete.enabled = false
-prepareRemapJar.enabled = false
-processResources.enabled = false
-processTestResources.enabled = false
-remapJar.enabled = false
-remapSourcesJar.enabled = false
-sourcesJar.enabled = false
-test.enabled = false
-testClasses.enabled = false
-validateAccessWidener.enabled = false
