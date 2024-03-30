@@ -10,7 +10,16 @@ jobs:
       image: mcr.microsoft.com/openjdk/jdk:${{ matrix.java }}
       options: --user root
     steps:
+      # https://github.com/nektos/act/issues/973
+      - name: Install node
+        if: ${{ env.ACT }}
+        run: |
+          apt update
+          apt install -y curl git
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash - 
+          apt install -y nodejs
       - name: Install git on container
+        if: ${{ !env.ACT }}
         run: |
           apt update
           apt install -y git
@@ -29,9 +38,7 @@ jobs:
         with:
           name: Artifacts-
           path: |
-            SophisticatedCore/build/libs/
-            SophisticatedBackpacks/build/libs/
-            SophisticatedStorage/build/libs/
+            */build/libs/
       - uses: actions/upload-artifact@v4
         if: ${{ matrix.java == '21-ubuntu' }} # Only upload artifacts built from latest java
         with:
@@ -43,7 +50,16 @@ jobs:
       image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
       options: --user root
     steps:
+      # https://github.com/nektos/act/issues/973
+      - name: Install node
+        if: ${{ env.ACT }}
+        run: |
+          apt update
+          apt install -y curl git
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+          apt install -y nodejs
       - name: Install git on container
+        if: ${{ !env.ACT }}
         run: |
           apt update
           apt install -y git
