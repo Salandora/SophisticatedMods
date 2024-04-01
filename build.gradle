@@ -1,3 +1,6 @@
+import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.ValidateMixinNameTask
+
 buildscript {
     repositories {
         maven { url = "https://maven.fabricmc.net/" }
@@ -8,6 +11,7 @@ plugins {
     id "fabric-loom" version "1.5-SNAPSHOT"
     id "io.github.p03w.machete" version "2.0.1" apply false // automatic jar compressing on build
     id "maven-publish"
+    id 'jacoco'
 }
 
 @SuppressWarnings('unused')
@@ -17,6 +21,17 @@ def moduleDependency(Project project, List<String> depNames) {
     project.dependencies {
         deps.each {
             api it
+        }
+    }
+}
+
+@SuppressWarnings('unused')
+def testDependencies(project, List<String> depNames) {
+    def deps = depNames.iterator().collect { project.dependencies.project(path: ":$it", configuration: 'namedElements') }
+
+    project.dependencies {
+        deps.each {
+            testmodImplementation it
         }
     }
 }
@@ -93,6 +108,65 @@ allprojects  {
         maven { url = "https://maven.resourcefulbees.com/repository/terrarium/" } // Chipped, resourcefullib
     }
 
+    sourceSets {
+        testmod {
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.runtimeClasspath
+        }
+
+        test {
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.runtimeClasspath
+
+            compileClasspath += testmod.compileClasspath
+            runtimeClasspath += testmod.runtimeClasspath
+        }
+    }
+
+    loom {
+        runtimeOnlyLog4j = true
+
+        runs {
+            client {
+                ideConfigGenerated = true
+            }
+
+            server {
+                ideConfigGenerated = true
+            }
+
+            testmodClient {
+                client()
+                ideConfigGenerated project.rootProject == project
+                name = "Testmod Client"
+                source sourceSets.testmod
+            }
+
+            testmodServer {
+                server()
+                ideConfigGenerated project.rootProject == project
+                name = "Testmod Server"
+                source sourceSets.testmod
+            }
+        }
+    }
+
+    loom.runs.configureEach {
+        vmArg("-Dmixin.debug.export=true") // export all mixins
+        vmArg("-Dmixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
+        vmArg("-enableassertions")
+    }
+
+    allprojects.each { p ->
+        loom.mods.register(p.name) {
+            sourceSet p.sourceSets.main
+        }
+
+        loom.mods.register(p.name + "-testmod") {
+            sourceSet p.sourceSets.testmod
+        }
+    }
+
     dependencies {
         minecraft("com.mojang:minecraft:$project.minecraft_version")
         mappings(loom.layered {
@@ -112,40 +186,19 @@ allprojects  {
         modImplementation("maven.modrinth:lazydfu:$project.lazy_dfu_version")
 
         // Test dependencies
+        testmodImplementation sourceSets.main.output
+
         testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
+        testImplementation sourceSets.testmod.output
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.+'
         testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.+'
         testImplementation "org.mockito:mockito-core:5.10.+"
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.+'
     }
 
-    loom {
-        runtimeOnlyLog4j = true
-
-        runs.configureEach {
-            vmArg("-Dmixin.debug.export=true") // export all mixins
-            vmArg("-Dmixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
-            vmArg("-enableassertions")
-        }
-
-        runs {
-            client {
-                ideConfigGenerated = true
-            }
-
-            server {
-                ideConfigGenerated = true
-            }
-        }
-    }
-
-    subprojects.each { p ->
-        loom.mods.register(p.name) {
-            sourceSet p.sourceSets.main
-        }
-    }
-
     test {
+        dependsOn("processResources")
+
         useJUnitPlatform()
         testLogging {
             events "passed", "skipped", "failed"
@@ -153,7 +206,6 @@ allprojects  {
 
         workingDir file("${rootDir}/run_tests")
     }
-    test.dependsOn("processResources")
 
     tasks.withType(ProcessResources).configureEach {
         exclude '.cache'
@@ -177,6 +229,29 @@ allprojects  {
             expand replaceProperties + [project: project]
         }
     }
+
+    tasks.register('testmodJar', Jar) {
+        from sourceSets.testmod.output
+
+        destinationDirectory = project.getLayout().getBuildDirectory().dir("devlibs")
+        archiveClassifier = "testmod"
+    }
+
+    tasks.register('remapTestmodJar', RemapJarTask) {
+        dependsOn testmodJar
+        input = testmodJar.archiveFile
+        archiveClassifier = "testmod"
+        addNestedDependencies = false
+    }
+    build.dependsOn remapTestmodJar
+
+    tasks.register('validateMixinNames', ValidateMixinNameTask) {
+        source(sourceSets.main.output)
+        source(sourceSets.testmod.output)
+    }
+
+    // Apply to each valid subproject.
+    apply from: rootProject.file('gradle/package-info.gradle')
 }
 
 subprojects {
@@ -221,6 +296,10 @@ subprojects {
         modCompileOnly("curse.maven:resourcefullib-570073:${project.resourcefullib_cf_file_id}")
 
         modCompileOnly("vazkii.botania:Botania:${project.botania_version}") { transitive = false }
+
+        // Test dependencies
+        testmodImplementation sourceSets.main.output
+        testmodImplementation fabricApi.module("fabric-gametest-api-v1", fabric_version)
     }
 
     fabricApi {
@@ -338,10 +417,94 @@ dependencies {
     afterEvaluate {
         subprojects.each {
             api project(path: "${it.path}", configuration: "namedElements")
+
+            testmodImplementation project("${it.path}:").sourceSets.testmod.output
         }
     }
 
     // additionalMods(dependencies)
+}
+
+remapTestmodJar {
+    def testModJarTasks = []
+
+    subprojects {
+        if (!(it.file("src/testmod").exists() || it.file("src/testmodClient").exists())) {
+            return
+        }
+
+        testModJarTasks += it.tasks.remapTestmodJar
+    }
+
+    nestedJars.setFrom(testModJarTasks)
+    addNestedDependencies = true
+}
+
+loom {
+    runs {
+        gametest {
+            inherit testmodServer
+
+            name "Game Test"
+
+            // Enable the gametest runner
+            vmArg "-Dfabric-api.gametest"
+            vmArg "-Dfabric-api.gametest.report-file=${project.getLayout().getBuildDirectory().file('junit.xml').get()}"
+            runDir "run_tests"
+        }
+        autoTestServer {
+            inherit testmodServer
+            name  "Auto Test Server"
+            vmArg "-Dfabric.autoTest"
+        }
+        autoTestClient {
+            inherit testmodClient
+            name "Auto Test Client"
+            vmArg "-Dfabric.autoTest"
+        }
+
+        // Create duplicate tasks for this, as jacoco slows things down a bit
+        gametestCoverage {
+            inherit gametest
+            name "Game Test Coverage"
+            ideConfigGenerated = false
+        }
+
+        autoTestClientCoverage {
+            inherit autoTestClient
+            name "Auto Test Client Coverage"
+            ideConfigGenerated = false
+        }
+    }
+}
+test.dependsOn runGametest
+
+def coverageTasks = [
+        runGametestCoverage,
+        runAutoTestClientCoverage
+]
+
+jacoco {
+    coverageTasks.forEach {
+        applyTo it
+    }
+}
+
+tasks.register('coverage', JacocoReport) {
+    dependsOn coverageTasks
+    coverageTasks.forEach {
+        executionData it
+    }
+
+    // Add all source as input
+    allprojects { p ->
+        sourceSets p.sourceSets.main, p.sourceSets.testmod, p.sourceSets.testmodClient
+    }
+
+    // Exclude mixins
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: '**/mixin/**')
+    }))
 }
 
 static def getBuildNumber() {
