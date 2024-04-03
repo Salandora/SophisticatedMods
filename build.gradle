@@ -418,7 +418,7 @@ dependencies {
         subprojects.each {
             api project(path: "${it.path}", configuration: "namedElements")
 
-            testmodImplementation project("${it.path}:").sourceSets.testmod.output
+            testmodImplementation project(":${it.path}").sourceSets.testmod.output
         }
     }
 
