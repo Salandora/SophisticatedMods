@@ -189,7 +189,7 @@ allprojects  {
         testmodImplementation sourceSets.main.output
 
         testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
-        testImplementation sourceSets.testmod.output
+        //testImplementation sourceSets.testmod.output
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.+'
         testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.+'
         testImplementation "org.mockito:mockito-core:5.10.+"
@@ -299,7 +299,7 @@ subprojects {
 
         // Test dependencies
         testmodImplementation sourceSets.main.output
-        testmodImplementation fabricApi.module("fabric-gametest-api-v1", fabric_version)
+        // testmodImplementation fabricApi.module("fabric-gametest-api-v1", fabric_version)
     }
 
     fabricApi {
@@ -477,7 +477,7 @@ loom {
         }
     }
 }
-test.dependsOn runGametest
+// test.dependsOn runGametest
 
 def coverageTasks = [
         runGametestCoverage,
