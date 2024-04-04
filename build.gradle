@@ -127,14 +127,6 @@ allprojects  {
         runtimeOnlyLog4j = true
 
         runs {
-            client {
-                ideConfigGenerated = true
-            }
-
-            server {
-                ideConfigGenerated = true
-            }
-
             testmodClient {
                 client()
                 ideConfigGenerated project.rootProject == project
