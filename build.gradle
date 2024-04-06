@@ -386,7 +386,7 @@ def additionalMods(DependencyHandler deps) {
     deps.modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$project.cca_version") // for Trinkets
 
     deps.modLocalRuntime("vazkii.botania:Botania:${project.botania_version}") { exclude(module: "emi") }
-    deps.modLocalRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
+    // deps.modLocalRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
 
     deps.modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
 
@@ -398,9 +398,7 @@ def additionalMods(DependencyHandler deps) {
     deps.modLocalRuntime("curse.maven:balm-500525:${project.balm_cf_file_id}")
     deps.modLocalRuntime("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
 
-    deps.modLocalRuntime("curse.maven:chipped-456956:${project.chipped_cf_file_id}")
-    deps.modLocalRuntime("curse.maven:athena-841890:${project.athena_cf_file_id}")
-    deps.modLocalRuntime("curse.maven:resourcefullib-570073:${project.resourcefullib_cf_file_id}")
+    deps.modLocalRuntime("earth.terrarium.chipped:Chipped-fabric-${minecraft_version}:${project.chipped_version}")
 }
 
 dependencies {
