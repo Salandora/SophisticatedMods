@@ -259,7 +259,7 @@ subprojects {
         // EMI
         modCompileOnly("dev.emi:emi-fabric:$emi_version")
         // JEI
-        modCompileOnlyApi("mezz.jei:jei-$minecraft_version-common-api:$jei_version")
+        //modCompileOnlyApi("mezz.jei:jei-$minecraft_version-common-api:$jei_version")
         modCompileOnly("mezz.jei:jei-$minecraft_version-fabric:$jei_version")
         // REI
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version")
@@ -375,7 +375,7 @@ def additionalMods(DependencyHandler deps) {
         default: println("Unknown recipe viewer specified: $project.recipe_viewer. Must be JEI, REI, EMI, or disabled.")
     }
 
-    deps.modLocalRuntime("org.joml:joml:1.10.4")
+    //deps.modLocalRuntime("org.joml:joml:1.10.4")
     deps.modLocalRuntime("maven.modrinth:indium:${indium_version}")
     deps.modLocalRuntime("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
 
@@ -390,7 +390,7 @@ def additionalMods(DependencyHandler deps) {
         exclude(module: "emi-fabric")
     }
 
-    deps.modLocalRuntime("curse.maven:config-menus-forge-544048:$project.forge_config_screen_version")
+    // deps.modLocalRuntime("curse.maven:config-menus-forge-544048:$project.forge_config_screen_version")
     deps.modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
 
     deps.modLocalRuntime("maven.modrinth:jade:${jade_version}")
