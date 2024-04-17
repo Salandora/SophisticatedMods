@@ -278,7 +278,7 @@ subprojects {
         modCompileOnly("mezz.jei:jei-$minecraft_version-fabric:$jei_version")
         // REI
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version")
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version")
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version") { transitive = false }
 
         /*modCompileOnly("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
         modCompileOnly("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")*/
@@ -298,7 +298,7 @@ subprojects {
         modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
         modCompileOnly("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
 
-        modImplementation("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
+        modCompileOnly("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
 
         modCompileOnly("vazkii.botania:Botania:${project.botania_version}") { transitive = false }
 
@@ -315,7 +315,8 @@ subprojects {
         runs {
             datagen {
                 ideConfigGenerated = true
-                vmArg "-Dfabric-api.datagen.modid=$mod_id"
+                property("fabric-api.datagen.modid", mod_id)
+                property("fabric.modsFolder", Paths.get(project.getProjectDir().toString(), it.runDir, "mods").toString())
             }
         }
     }
