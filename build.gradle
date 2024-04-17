@@ -1,6 +1,8 @@
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.ValidateMixinNameTask
 
+import java.nio.file.Paths
+
 buildscript {
     repositories {
         maven { url = "https://maven.fabricmc.net/" }
@@ -128,6 +130,18 @@ allprojects  {
         runtimeOnlyLog4j = true
 
         runs {
+            client {
+                client()
+                ideConfigGenerated project.rootProject == project
+                property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+            }
+
+            server {
+                server()
+                ideConfigGenerated project.rootProject == project
+                property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+            }
+
             testmodClient {
                 client()
                 ideConfigGenerated project.rootProject == project
@@ -145,8 +159,8 @@ allprojects  {
     }
 
     loom.runs.configureEach {
-        vmArg("-Dmixin.debug.export=true") // export all mixins
-        vmArg("-Dmixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
+        property("mixin.debug.export=true") // export all mixins
+        property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
         vmArg("-enableassertions")
     }
 
@@ -176,7 +190,6 @@ allprojects  {
         modImplementation("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") { transitive = false }
 
         modImplementation("com.terraformersmc:modmenu:$project.modmenu_version")
-        modImplementation("maven.modrinth:lazydfu:$project.lazy_dfu_version")
 
         // Test dependencies
         testmodImplementation sourceSets.main.output
@@ -376,32 +389,6 @@ def additionalMods(DependencyHandler deps) {
         case "disabled": break
         default: println("Unknown recipe viewer specified: $project.recipe_viewer. Must be JEI, REI, EMI, or disabled.")
     }
-
-    deps.modLocalRuntime("org.joml:joml:1.10.4")
-    deps.modLocalRuntime("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")
-    deps.modLocalRuntime("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
-
-    // Create - dependencies are added transitively
-    deps.modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version}:${project.create_version}")
-
-    deps.modLocalRuntime("dev.emi:trinkets:$project.trinkets_version")
-    deps.modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$project.cca_version") // for Trinkets
-    deps.modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$project.cca_version") // for Trinkets
-
-    deps.modLocalRuntime("vazkii.botania:Botania:${project.botania_version}") { exclude(module: "emi") }
-    deps.modLocalRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
-
-    deps.modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
-
-    deps.modLocalRuntime("maven.modrinth:jade:${jade_version}")
-
-    deps.modLocalRuntime("curse.maven:malilib-303119:$project.malilib_cf_file_id")
-    deps.modLocalRuntime("curse.maven:litematica-308892:$project.litematica_cf_file_id")
-
-    deps.modLocalRuntime("curse.maven:balm-500525:${project.balm_cf_file_id}")
-    deps.modLocalRuntime("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
-
-    deps.modLocalRuntime("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
 }
 
 dependencies {
@@ -413,7 +400,7 @@ dependencies {
         }
     }
 
-    // additionalMods(dependencies)
+    additionalMods(dependencies)
 }
 
 remapTestmodJar {
