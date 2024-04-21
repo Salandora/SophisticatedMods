@@ -1,19 +1,29 @@
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.ValidateMixinNameTask
+import net.fabricmc.loom.util.gradle.SourceSetHelper
 
 import java.nio.file.Paths
-
-buildscript {
-    repositories {
-        maven { url = "https://maven.fabricmc.net/" }
-    }
-}
+import java.util.stream.Collectors
 
 plugins {
-    id "fabric-loom" version "1.5-SNAPSHOT"
-    id "io.github.p03w.machete" version "2.0.1" apply false // automatic jar compressing on build
+    id "java-library"
+    id "idea"
     id "maven-publish"
     id 'jacoco'
+    id "fabric-loom" version "1.6-SNAPSHOT"
+    id "io.github.p03w.machete" version "2.0.1" apply false // automatic jar compressing on build
+}
+
+def ENV = System.getenv()
+
+static def getBuildNumber() {
+    def ENV = System.getenv()
+    return ENV.GITHUB_RUN_NUMBER != null ? "-build." + ENV.GITHUB_RUN_NUMBER.toString() : "-local"
+}
+
+static def getStable() {
+    def ENV = System.getenv()
+    return ENV.GITHUB_REF == null || ENV.GITHUB_REF.endsWith("-dev") ? "-SNAPSHOT" : ""
 }
 
 @SuppressWarnings('unused')
@@ -27,17 +37,6 @@ def moduleDependency(Project project, List<String> depNames) {
     }
 }
 
-@SuppressWarnings('unused')
-def testDependencies(project, List<String> depNames) {
-    def deps = depNames.iterator().collect { project.dependencies.project(path: ":$it", configuration: 'namedElements') }
-
-    project.dependencies {
-        deps.each {
-            testmodImplementation it
-        }
-    }
-}
-
 configurations.configureEach {
     resolutionStrategy {
         // fixes loom using a loader version from a dependency
@@ -46,6 +45,8 @@ configurations.configureEach {
 }
 
 allprojects  {
+    apply plugin: "java-library"
+    apply plugin: "idea"
     apply plugin: "fabric-loom"
 
     group = project.mod_group_id
@@ -116,9 +117,6 @@ allprojects  {
         }
 
         test {
-            compileClasspath += main.compileClasspath
-            runtimeClasspath += main.runtimeClasspath
-
             compileClasspath += testmod.compileClasspath
             runtimeClasspath += testmod.runtimeClasspath
         }
@@ -131,13 +129,13 @@ allprojects  {
             client {
                 client()
                 ideConfigGenerated project.rootProject == project
-                property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+                property "fabric.modsFolder", Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}").toString()
             }
 
             server {
                 server()
                 ideConfigGenerated project.rootProject == project
-                property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+                property "fabric.modsFolder", Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}").toString()
             }
 
             testmodClient {
@@ -190,25 +188,33 @@ allprojects  {
         modImplementation("com.terraformersmc:modmenu:$project.modmenu_version")
 
         // Test dependencies
+        testmodImplementation "org.mockito:mockito-core:5.10.+"
         testmodImplementation sourceSets.main.output
 
         testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
-        //testImplementation sourceSets.testmod.output
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.+'
-        testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.+'
-        testImplementation "org.mockito:mockito-core:5.10.+"
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.+'
+        testImplementation sourceSets.testmod.output
     }
 
     test {
-        dependsOn("processResources")
+//        dependsOn("processResources")
 
         useJUnitPlatform()
-        testLogging {
+        /*testLogging {
             events "passed", "skipped", "failed"
-        }
+        }*/
 
-        workingDir file("${rootDir}/run_tests")
+        afterEvaluate {
+            // See: https://github.com/FabricMC/fabric-loader/pull/585
+            def classPathGroups = loom.mods.stream()
+                    .map { modSettings ->
+                        SourceSetHelper.getClasspath(modSettings, getProject()).stream()
+                                .map(File.&getAbsolutePath)
+                                .collect(Collectors.joining(File.pathSeparator))
+                    }
+                    .collect(Collectors.joining(File.pathSeparator+File.pathSeparator))
+
+            systemProperty("fabric.classPathGroups", classPathGroups)
+        }
     }
 
     tasks.withType(ProcessResources).configureEach {
@@ -246,6 +252,8 @@ allprojects  {
         input = testmodJar.archiveFile
         archiveClassifier = "testmod"
         addNestedDependencies = false
+        // includesClientOnlyClasses = true
+        // clientOnlySourceSetName = sourceSets.testmodClient.name
     }
     build.dependsOn remapTestmodJar
 
@@ -302,7 +310,7 @@ subprojects {
 
         // Test dependencies
         testmodImplementation sourceSets.main.output
-        // testmodImplementation fabricApi.module("fabric-gametest-api-v1", fabric_version)
+        testmodImplementation fabricApi.module("fabric-gametest-api-v1", fabric_version)
     }
 
     fabricApi {
@@ -313,18 +321,18 @@ subprojects {
         runs {
             datagen {
                 ideConfigGenerated = true
-                vmArg "-Dfabric-api.datagen.modid=$mod_id"
+                // property "fabric-api.datagen.modid", mod_id
             }
         }
     }
 
     tasks.register("generateResources") {
-        group = "fabric"
+        group "fabric"
         generateResources.dependsOn runDatagen
     }
 
     machete {
-//    enabled = System.getenv("GITHUB_RUN_NUMBER") != null
+//    enabled = ENV.GITHUB_RUN_NUMBER != null
         json.enabled = false
         finalizeAfter = ""
         ignoredTasks.add("jar")
@@ -357,7 +365,7 @@ subprojects {
     }
 
     tasks.register('printVersionName') {
-        println "version: " + version
+        logger.lifecycle("$mod_id version: " + version)
     }
 
     publishing {
@@ -395,6 +403,7 @@ dependencies {
             api project(path: "${it.path}", configuration: "namedElements")
 
             testmodImplementation project(":${it.path}").sourceSets.testmod.output
+            // testmodClientImplementation project("${it.path}:").sourceSets.testmodClient.output
         }
     }
 
@@ -405,7 +414,7 @@ remapTestmodJar {
     def testModJarTasks = []
 
     subprojects {
-        if (!(it.file("src/testmod").exists() || it.file("src/testmodClient").exists())) {
+        if (!(it.file("src/testmod").exists()/* || it.file("src/testmodClient").exists()*/)) {
             return
         }
 
@@ -414,6 +423,7 @@ remapTestmodJar {
 
     nestedJars.setFrom(testModJarTasks)
     addNestedDependencies = true
+    // clientOnlySourceSetName = sourceSets.testmodClient.name
 }
 
 loom {
@@ -424,20 +434,22 @@ loom {
             name "Game Test"
 
             // Enable the gametest runner
-            vmArg "-Dfabric-api.gametest"
-            vmArg "-Dfabric-api.gametest.report-file=${project.getLayout().getBuildDirectory().file('junit.xml').get()}"
-            runDir "run_tests"
+            property "fabric-api.gametest"
+            property "fabric-api.gametest.report-file", project.getLayout().getBuildDirectory().file('junit.xml').get().toString()
+            runDir "build/gametest"
         }
+/*
         autoTestServer {
             inherit testmodServer
             name  "Auto Test Server"
-            vmArg "-Dfabric.autoTest"
+            property "fabric.autoTest"
         }
         autoTestClient {
             inherit testmodClient
             name "Auto Test Client"
-            vmArg "-Dfabric.autoTest"
+            property "fabric.autoTest"
         }
+*/
 
         // Create duplicate tasks for this, as jacoco slows things down a bit
         gametestCoverage {
@@ -446,18 +458,25 @@ loom {
             ideConfigGenerated = false
         }
 
-        autoTestClientCoverage {
+/*        autoTestClientCoverage {
             inherit autoTestClient
             name "Auto Test Client Coverage"
             ideConfigGenerated = false
-        }
+        }*/
     }
 }
-// test.dependsOn runGametest
+test.dependsOn runGametest
+
+afterEvaluate {
+    loom.runs.configureEach {
+        // https://fabricmc.net/wiki/tutorial:mixin_hotswaps
+        vmArg "-javaagent:${ configurations.compileClasspath.find { it.name.contains("sponge-mixin") } }"
+    }
+}
 
 def coverageTasks = [
         runGametestCoverage,
-        runAutoTestClientCoverage
+        /*runAutoTestClientCoverage*/
 ]
 
 jacoco {
@@ -474,25 +493,11 @@ tasks.register('coverage', JacocoReport) {
 
     // Add all source as input
     allprojects { p ->
-        sourceSets p.sourceSets.main, p.sourceSets.testmod, p.sourceSets.testmodClient
+        sourceSets p.sourceSets.main, p.sourceSets.testmod
     }
 
     // Exclude mixins
     classDirectories.setFrom(files(classDirectories.files.collect {
         fileTree(dir: it, exclude: '**/mixin/**')
     }))
-}
-
-static def getBuildNumber() {
-    if (System.getenv("GITHUB_RUN_NUMBER") != null) {
-        return "-build." + System.getenv("GITHUB_RUN_NUMBER").toString()
-    }
-    return "-local"
-}
-
-static def getStable() {
-    if (System.getenv("GITHUB_REF") == null || System.getenv("GITHUB_REF").endsWith("-dev")) {
-        return "-SNAPSHOT"
-    }
-    return ""
 }
