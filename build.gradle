@@ -128,18 +128,6 @@ allprojects  {
         runtimeOnlyLog4j = true
 
         runs {
-            client {
-                client()
-                ideConfigGenerated project.rootProject == project
-                property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
-            }
-
-            server {
-                server()
-                ideConfigGenerated project.rootProject == project
-                property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
-            }
-
             testmodClient {
                 client()
                 ideConfigGenerated project.rootProject == project
@@ -418,6 +406,16 @@ remapTestmodJar {
 
 loom {
     runs {
+        client {
+            client()
+            property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+        }
+
+        server {
+            server()
+            property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+        }
+
         gametest {
             inherit testmodServer
 
