@@ -345,7 +345,7 @@ subprojects {
     }
 
     tasks.register('printVersionName') {
-        println "version: " + version
+        println "${mod_id} version: ${version}"
     }
 
     publishing {
