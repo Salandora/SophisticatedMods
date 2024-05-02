@@ -130,18 +130,6 @@ allprojects  {
         runtimeOnlyLog4j = true
 
         runs {
-            client {
-                client()
-                ideConfigGenerated project.rootProject == project
-                property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
-            }
-
-            server {
-                server()
-                ideConfigGenerated project.rootProject == project
-                property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
-            }
-
             testmodClient {
                 client()
                 ideConfigGenerated project.rootProject == project
@@ -274,14 +262,14 @@ subprojects {
         // EMI
         modCompileOnly("dev.emi:emi-fabric:$emi_version")
         // JEI
-        modCompileOnlyApi("mezz.jei:jei-$minecraft_version-common-api:$jei_version")
+        //modCompileOnlyApi("mezz.jei:jei-$minecraft_version-common-api:$jei_version")
         modCompileOnly("mezz.jei:jei-$minecraft_version-fabric:$jei_version")
         // REI
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version")
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version") { transitive = false }
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version")
 
-        /*modCompileOnly("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
-        modCompileOnly("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")*/
+        modCompileOnly("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
+        modCompileOnly("maven.modrinth:indium:${indium_version}")
 
         implementation("com.electronwill.night-config:core:$project.night_config_version")
         implementation("com.electronwill.night-config:toml:$project.night_config_version")
@@ -292,8 +280,9 @@ subprojects {
 
         modCompileOnly("maven.modrinth:jade:${jade_version}")
 
-        modCompileOnly("curse.maven:malilib-303119:$project.malilib_cf_file_id")
+        modCompileOnly("curse.maven:item-scroller-242064:$project.itemscroller_cf_file_id")
         modCompileOnly("curse.maven:litematica-308892:$project.litematica_cf_file_id")
+        modCompileOnly("curse.maven:malilib-303119:$project.malilib_cf_file_id")
 
         modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
         modCompileOnly("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
@@ -316,7 +305,6 @@ subprojects {
             datagen {
                 ideConfigGenerated = true
                 property("fabric-api.datagen.modid", mod_id)
-                property("fabric.modsFolder", Paths.get(project.getProjectDir().toString(), it.runDir, "mods").toString())
             }
         }
     }
@@ -421,6 +409,16 @@ remapTestmodJar {
 
 loom {
     runs {
+        client {
+            client()
+            property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+        }
+
+        server {
+            server()
+            property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+        }
+
         gametest {
             inherit testmodServer
 
