@@ -273,7 +273,7 @@ subprojects {
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version")
 
         modCompileOnly("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
-        modCompileOnly("maven.modrinth:indium:${indium_version}")
+        modCompileOnly("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")
 
         implementation("com.electronwill.night-config:core:$project.night_config_version")
         implementation("com.electronwill.night-config:toml:$project.night_config_version")
@@ -382,8 +382,6 @@ def additionalMods(DependencyHandler deps) {
         case "disabled": break
         default: println("Unknown recipe viewer specified: $project.recipe_viewer. Must be JEI, REI, EMI, or disabled.")
     }
-
-    deps.modLocalRuntime("curse.maven:item-scroller-242064:$project.itemscroller_cf_file_id")
 }
 
 dependencies {
