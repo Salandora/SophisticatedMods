@@ -1,6 +1,8 @@
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.ValidateMixinNameTask
 
+import java.nio.file.Paths
+
 buildscript {
     repositories {
         maven { url = "https://maven.fabricmc.net/" }
@@ -157,8 +159,8 @@ allprojects  {
     }
 
     loom.runs.configureEach {
-        vmArg("-Dmixin.debug.export=true") // export all mixins
-        vmArg("-Dmixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
+        property("mixin.debug.export=true") // export all mixins
+        property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
         vmArg("-enableassertions")
     }
 
@@ -273,7 +275,7 @@ subprojects {
         // EMI
         modCompileOnly("dev.emi:emi-fabric:$emi_version")
         // JEI
-        modCompileOnlyApi("mezz.jei:jei-$minecraft_version-common-api:$jei_version")
+        //modCompileOnlyApi("mezz.jei:jei-$minecraft_version-common-api:$jei_version")
         modCompileOnly("mezz.jei:jei-$minecraft_version-fabric:$jei_version")
         // REI
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version")
@@ -291,8 +293,9 @@ subprojects {
 
         modCompileOnly("maven.modrinth:jade:${jade_version}")
 
-        modCompileOnly("curse.maven:malilib-303119:$project.malilib_cf_file_id")
+        modCompileOnly("curse.maven:item-scroller-242064:$project.itemscroller_cf_file_id")
         modCompileOnly("curse.maven:litematica-308892:$project.litematica_cf_file_id")
+        modCompileOnly("curse.maven:malilib-303119:$project.malilib_cf_file_id")
 
         modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
         modCompileOnly("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
@@ -389,33 +392,6 @@ def additionalMods(DependencyHandler deps) {
         case "disabled": break
         default: println("Unknown recipe viewer specified: $project.recipe_viewer. Must be JEI, REI, EMI, or disabled.")
     }
-
-    deps.modLocalRuntime("org.joml:joml:1.10.4")
-    deps.modLocalRuntime("maven.modrinth:indium:${indium_version}+mc${minecraft_version}")
-    deps.modLocalRuntime("maven.modrinth:sodium:mc${minecraft_version}-${sodium_version}")
-
-    // Create - dependencies are added transitively
-    deps.modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version}:${project.create_version}")
-
-    deps.modLocalRuntime("dev.emi:trinkets:$project.trinkets_version")
-    deps.modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$project.cca_version") // for Trinkets
-    deps.modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$project.cca_version") // for Trinkets
-
-    deps.modLocalRuntime("vazkii.botania:Botania:${project.botania_version}") { exclude(module: "emi") }
-    deps.modLocalRuntime("vazkii.patchouli:Patchouli:${project.patchouli_version}")
-
-    deps.modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
-
-    deps.modLocalRuntime("maven.modrinth:jade:${jade_version}")
-
-    deps.modLocalRuntime("curse.maven:malilib-303119:$project.malilib_cf_file_id")
-    deps.modLocalRuntime("curse.maven:litematica-308892:$project.litematica_cf_file_id")
-
-    deps.modLocalRuntime("curse.maven:balm-500525:${project.balm_cf_file_id}")
-    deps.modLocalRuntime("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
-
-    deps.modLocalRuntime("curse.maven:chipped-456956:${project.chipped_cf_file_id}")
-    deps.modLocalRuntime("curse.maven:resourcefullib-570073:${project.resourcefullib_cf_file_id}")
 }
 
 dependencies {
@@ -423,11 +399,11 @@ dependencies {
         subprojects.each {
             api project(path: "${it.path}", configuration: "namedElements")
 
-            testmodImplementation project("${it.path}:").sourceSets.testmod.output
+            testmodImplementation project(":${it.path}").sourceSets.testmod.output
         }
     }
 
-    // additionalMods(dependencies)
+    additionalMods(dependencies)
 }
 
 remapTestmodJar {
@@ -447,6 +423,16 @@ remapTestmodJar {
 
 loom {
     runs {
+        client {
+            client()
+            property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+        }
+
+        server {
+            server()
+            property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+        }
+
         gametest {
             inherit testmodServer
 
