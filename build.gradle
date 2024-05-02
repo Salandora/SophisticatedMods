@@ -86,6 +86,10 @@ allprojects  {
         }
 
         maven { url = "https://maven.quiltmc.org/repository/release" } // QM
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+        }
 
         maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
         maven { url = "https://mvn.devos.one/snapshots/" } // Porting Lib, serialization-hooks
@@ -177,8 +181,8 @@ allprojects  {
     dependencies {
         minecraft("com.mojang:minecraft:$project.minecraft_version")
         mappings(loom.layered {
-            it.mappings("org.quiltmc:quilt-mappings:$project.minecraft_version+build.$project.qm_version:intermediary-v2")
             it.officialMojangMappings() { nameSyntheticMembers = false }
+            it.parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
         })
 
         modImplementation("net.fabricmc:fabric-loader:$project.loader_version")
