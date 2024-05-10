@@ -45,6 +45,12 @@ configurations.configureEach {
     }
 }
 
+moduleDependency(project, [
+        "SophisticatedCore",
+        "SophisticatedBackpacks",
+        "SophisticatedStorage"
+])
+
 allprojects  {
     apply plugin: "fabric-loom"
 
@@ -394,21 +400,6 @@ dependencies {
     additionalMods(dependencies)
 }
 
-remapTestmodJar {
-    def testModJarTasks = []
-
-    subprojects {
-        if (!(it.file("src/testmod").exists() || it.file("src/testmodClient").exists())) {
-            return
-        }
-
-        testModJarTasks += it.tasks.remapTestmodJar
-    }
-
-    nestedJars.setFrom(testModJarTasks)
-    addNestedDependencies = true
-}
-
 loom {
     runs {
         client {
@@ -486,6 +477,35 @@ loom {
 }
 // test.dependsOn runGametest
 
+
+subprojects.each {
+    remapJar.dependsOn("${it.path}:optimizedJar")
+    remapTestmodJar.dependsOn("${it.path}:remapTestmodJar")
+}
+
+remapJar {
+    afterEvaluate {
+        subprojects {
+            nestedJars.from project("${it.path}").tasks.named("remapJar")
+        }
+    }
+
+    addNestedDependencies = true
+}
+remapTestmodJar {
+    afterEvaluate {
+        subprojects {
+            if (!(it.file("src/testmod").exists() || it.file("src/testmodClient").exists())) {
+                return
+            }
+
+            nestedJars.from project("${it.path}").tasks.named("remapTestmodJar")
+        }
+    }
+
+    addNestedDependencies = true
+}
+
 def coverageTasks = [
         runGametestCoverage,
         runAutoTestClientCoverage
@@ -513,6 +533,18 @@ tasks.register('coverage', JacocoReport) {
         fileTree(dir: it, exclude: '**/mixin/**')
     }))
 }
+
+// Define a task to copy all outputs from sub-projects to a central location
+tasks.register('copyOutputs', Copy) {
+    from subprojects.collect {
+        mustRunAfter it.tasks.build
+        it.getLayout().getBuildDirectory().dir("libs")
+    }
+    into getLayout().getBuildDirectory().dir("libs")
+}
+
+// Make the build task depend on the copyOutputs task
+build.finalizedBy(copyOutputs)
 
 static def getBuildNumber() {
     if (System.getenv("GITHUB_RUN_NUMBER") != null) {
