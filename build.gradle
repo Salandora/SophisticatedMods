@@ -10,7 +10,7 @@ buildscript {
 }
 
 plugins {
-    id "fabric-loom" version "1.5-SNAPSHOT"
+    id "fabric-loom" version "1.6-SNAPSHOT"
     id "io.github.p03w.machete" version "2.0.1" apply false // automatic jar compressing on build
     id "maven-publish"
     id 'jacoco'
@@ -417,6 +417,12 @@ loom {
 
             property("mixin.debug.export=true") // export all mixins
             property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
+            /*vmArg("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED")
+            vmArg("--add-opens=java.base/java.lang=ALL-UNNAMED")
+            vmArg("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED")
+            vmArg("--add-opens=java.base/java.io=ALL-UNNAMED")
+            vmArg("--add-opens=java.desktop/java.beans=ALL-UNNAMED")
+            vmArg("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED")*/
 
             try {
                 afterEvaluate {
