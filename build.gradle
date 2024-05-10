@@ -163,8 +163,6 @@ allprojects  {
     }
 
     loom.runs.configureEach {
-        property("mixin.debug.export=true") // export all mixins
-        property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
         vmArg("-enableassertions")
     }
 
@@ -430,6 +428,28 @@ loom {
         client {
             client()
             property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
+
+            property("mixin.debug.export=true") // export all mixins
+            property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
+
+            try {
+                afterEvaluate {
+                    def mixinDep = this.configurations.compileClasspath
+                            .allDependencies
+                            .findAll { it.name == "sponge-mixin" }
+                            .first()
+
+                    if (mixin != null) {
+                        vmArg("-javaagent:${this.configurations.compileClasspath.files(mixinDep).first().path}")
+                        println("[Info]: Mixin Hotswap setup finished")
+                    } else {
+                        println("[Warning]: Unable to locate file path for Mixin jar")
+                    }
+                }
+            } catch (Exception e) {
+                println("[Error]: Mixin Hotswap setup failed!")
+                e.printStackTrace()
+            }
         }
 
         server {
