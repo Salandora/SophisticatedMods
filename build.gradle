@@ -38,15 +38,6 @@ def testDependencies(project, List<String> depNames) {
     }
 }
 
-configurations.configureEach {
-    resolutionStrategy {
-        // fixes loom using a loader version from a dependency
-        force("net.fabricmc:fabric-loader:$project.loader_version")
-        // this is necessary cause the 1.19.2 REI version somehow provides a version that is not for MC 1.19.2
-        force("dev.architectury:architectury-fabric:$project.architectury_version")
-    }
-}
-
 moduleDependency(project, [
         "SophisticatedCore",
         "SophisticatedBackpacks",
@@ -61,6 +52,15 @@ allprojects  {
         archivesName = "${mod_id}"
     }
     version = "${mod_version}+mc${project.minecraft_version}${getStable()}${getBuildNumber()}"
+
+    configurations.configureEach {
+        resolutionStrategy {
+            // fixes loom using a loader version from a dependency
+            force("net.fabricmc:fabric-loader:$project.loader_version")
+            // this is necessary cause the 1.19.2 REI version somehow provides a version that is not for MC 1.19.2
+            force("dev.architectury:architectury-fabric:$project.architectury_version")
+        }
+    }
 
     tasks.withType(GenerateModuleMetadata).configureEach {
         enabled = false
