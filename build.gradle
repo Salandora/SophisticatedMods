@@ -295,7 +295,7 @@ subprojects {
         modCompileOnly("curse.maven:balm-500525:${project.balm_cf_file_id}")
         modCompileOnly("curse.maven:craftingtweaks-502516:${project.crafting_tweaks_cf_file_id}")
 
-        modCompileOnly("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
+        modImplementation("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}")
 
         modCompileOnly("vazkii.botania:Botania:${project.botania_version}") { transitive = false }
 
