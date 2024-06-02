@@ -181,7 +181,7 @@ allprojects  {
         implementation("javax.annotation:javax.annotation-api:1.3.2")
         implementation("com.google.code.findbugs:jsr305:3.0.2")
 
-        modImplementation("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") { transitive = false }
+        //modImplementation("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") { transitive = false }
 
         modImplementation("com.terraformersmc:modmenu:$project.modmenu_version")
 
@@ -217,7 +217,6 @@ allprojects  {
                 loader_version      : loader_version,
                 fabric_version      : fabric_version,
                 sc_version          : project(":SophisticatedCore").version,
-                mkb_version         : mkb_mod_version,
                 forge_config_version: forge_config_api_port_version,
                 energy_version      : energy_version,
                 port_lib_version    : port_lib_version
@@ -296,6 +295,8 @@ subprojects {
         modImplementation("earth.terrarium.chipped:Chipped-fabric-${minecraft_version}:${project.chipped_version}")
 
         modCompileOnly("vazkii.botania:Botania:${project.botania_version}") { transitive = false }
+
+        modCompileOnly("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") { transitive = false }
 
         // Test dependencies
         testmodImplementation sourceSets.main.output
