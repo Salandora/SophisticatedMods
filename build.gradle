@@ -113,9 +113,9 @@ allprojects  {
         }
 
         maven { url = 'https://maven.blamejared.com' }
-        maven { url = "https://modmaven.dev" } // Jei
         maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
         maven { url = "https://www.cursemaven.com" } // Balm, CraftingTweaks
+        maven { url = "https://modmaven.dev" } // Jei
         maven { url = "https://maven.resourcefulbees.com/repository/maven-public/" } // Chipped, resourcefullib, athena
     }
 
@@ -283,7 +283,7 @@ subprojects {
 
         modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
 
-        modCompileOnly("maven.modrinth:jade:${jade_version}")
+        modCompileOnly("curse.maven:jade-324717:${jade_version}")
 
         modCompileOnly("curse.maven:item-scroller-242064:$project.itemscroller_cf_file_id")
         modCompileOnly("curse.maven:litematica-308892:$project.litematica_cf_file_id")
