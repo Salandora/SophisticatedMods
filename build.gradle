@@ -171,7 +171,7 @@ allprojects  {
     dependencies {
         minecraft("com.mojang:minecraft:$project.minecraft_version")
         mappings(loom.layered {
-            it.officialMojangMappings() { nameSyntheticMembers = false }
+            it.officialMojangMappings()
             it.parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
         })
 
