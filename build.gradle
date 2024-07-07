@@ -401,22 +401,29 @@ dependencies {
 }
 
 loom {
+    accessWidenerPath = file ('src/main/resources/helper.accesswidener')
+
     runs {
         client {
             client()
+
+            name = "Minecraft Client ${project.minecraft_version}"
+
             property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
 
             property("mixin.debug.export=true") // export all mixins
             property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
+            vmArg("-XX:+AllowEnhancedClassRedefinition")
             if (System.getenv("HOTSWAP_AGENT") != null) {
                 property("fabric.systemLibraries=" + System.getenv("HOTSWAP_AGENT"))
-                vmArg("-XX:+AllowEnhancedClassRedefinition")
                 vmArg("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED")
                 vmArg("--add-opens=java.base/java.lang=ALL-UNNAMED")
                 vmArg("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED")
                 vmArg("--add-opens=java.base/java.io=ALL-UNNAMED")
                 vmArg("--add-opens=java.desktop/java.beans=ALL-UNNAMED")
                 vmArg("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED")
+            } else {
+                vmArg("-XX:HotswapAgent=fatjar")
             }
 
             try {
@@ -441,6 +448,8 @@ loom {
 
         server {
             server()
+            name = "Minecraft Server ${project.minecraft_version}"
+
             property("fabric.modsFolder=${Paths.get(project.getProjectDir().toString(), it.runDir, "mods${project.minecraft_version}")}")
         }
 
