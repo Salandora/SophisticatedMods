@@ -12,7 +12,7 @@ buildscript {
 // Comment and uncomment depending on your mod_loader choice
 plugins {
     // id "org.quiltmc.loom" version "1.6.5"
-    id "fabric-loom" version "1.6-SNAPSHOT"
+    id "fabric-loom" version "1.7-SNAPSHOT"
     id "io.github.p03w.machete" version "2.0.1" apply false // automatic jar compressing on build
     id "maven-publish"
     id 'jacoco'
