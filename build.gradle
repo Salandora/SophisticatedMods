@@ -428,13 +428,15 @@ loom {
 
             try {
                 afterEvaluate {
-                    def mixinDep = this.configurations.compileClasspath
-                            .allDependencies
-                            .findAll { it.name == "sponge-mixin" }
-                            .first()
+                    def mixinDep = this.configurations.compileClasspath.incoming.artifactView {
+                        componentFilter {
+                            it instanceof ModuleComponentIdentifier
+                                    && it.module == "sponge-mixin"
+                        }
+                    }
 
                     if (mixin != null) {
-                        vmArg("-javaagent:${this.configurations.compileClasspath.files(mixinDep).first().path}")
+                        vmArg("-javaagent:${mixinDep.files.first().path}")
                         println("[Info]: Mixin Hotswap setup finished")
                     } else {
                         println("[Warning]: Unable to locate file path for Mixin jar")
