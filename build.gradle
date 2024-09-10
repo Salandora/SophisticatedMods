@@ -375,9 +375,15 @@ subprojects {
         modCompileOnly("vazkii.botania:Botania:${project.botania_version}") {
             transitive = false
             exclude group: "net.fabricmc"
-            exclude group: "net.fabricmc.fabric-api" }
+            exclude group: "net.fabricmc.fabric-api"
+        }
 
-        modCompileOnly("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") {
+        /*modCompileOnly("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") {
+            transitive = false
+            exclude group: "net.fabricmc"
+            exclude group: "net.fabricmc.fabric-api"
+        }*/
+        modCompileOnly("maven.modrinth:modernkeybinding:${project.mkb_modrinth_mod_version}") {
             transitive = false
             exclude group: "net.fabricmc"
             exclude group: "net.fabricmc.fabric-api"
