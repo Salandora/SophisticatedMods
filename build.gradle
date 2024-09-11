@@ -56,7 +56,7 @@ configurations.configureEach {
 moduleDependency(project, [
         "SophisticatedCore",
         "SophisticatedBackpacks",
-        "SophisticatedStorage"
+        // "SophisticatedStorage"
 ])
 
 allprojects  {
@@ -94,16 +94,16 @@ allprojects  {
         }
 
         maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
-        maven { url = "https://mvn.devos.one/snapshots/" } // Create, Porting Lib
+        maven { url = "https://mvn.devos.one/snapshots/" } // Porting Lib
         maven { url = "https://mvn.devos.one/releases/" } // Porting Lib
         maven { url = "https://jitpack.io/" } // for Porting Lib: Mixin Extras, Fabric ASM
         maven { // Forge Config API Port
             name = "Fuzs Mod Resources"
             url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
         }
-        maven { // Modern KeyBinding
+        /*maven { // Modern KeyBinding
             url = "https://maven.nova-committee.cn/releases"
-        }
+        }*/
 
         maven { url = "https://maven.terraformersmc.com/releases/" } // Emi
         maven { url = "https://maven.shedaniel.me/" } // REI and deps
@@ -129,6 +129,10 @@ allprojects  {
         maven { url = "https://modmaven.dev" } // Jei
         maven { url = "https://maven.resourcefulbees.com/repository/maven-public/" } // Chipped, resourcefullib, athena
         maven { url = 'https://maven.wispforest.io' } // accessory
+        maven {
+            name = "Nucleoid"
+            url = "https://maven.nucleoid.xyz/"
+        }
     }
 
     sourceSets {
@@ -286,8 +290,14 @@ subprojects {
     apply plugin: "maven-publish"
     apply plugin: "io.github.p03w.machete"
 
+    fabricApi {
+        configureDataGeneration {
+            modId = project.mod_id
+        }
+    }
+
     dependencies {
-        implementation(include(annotationProcessor("io.github.llamalad7:mixinextras-fabric:$project.mixinextras_version")))
+        // implementation(include(annotationProcessor("io.github.llamalad7:mixinextras-fabric:$project.mixinextras_version")))
 
         for (def module in port_lib_modules.split(',')) {
             modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version")) {
@@ -311,8 +321,16 @@ subprojects {
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$rei_version") {
             exclude group: "net.fabricmc"
             exclude group: "net.fabricmc.fabric-api"
+            exclude group: "org.yaml" // snakeyaml
+            exclude group: "blue.endless" // jankson
         }
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:$rei_version") {
+            exclude group: "net.fabricmc"
+            exclude group: "net.fabricmc.fabric-api"
+            exclude group: "org.yaml" // snakeyaml
+            exclude group: "blue.endless" // jankson
+        }
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}") {
             exclude group: "net.fabricmc"
             exclude group: "net.fabricmc.fabric-api"
         }
@@ -367,16 +385,17 @@ subprojects {
             exclude group: "net.fabricmc.fabric-api"
         }
 
-        modImplementation("earth.terrarium.chipped:Chipped-fabric-${minecraft_version}:${project.chipped_version}") {
+        modImplementation("earth.terrarium.chipped:chipped-fabric-${minecraft_version}:${project.chipped_version}") {
             exclude group: "net.fabricmc"
             exclude group: "net.fabricmc.fabric-api"
         }
 
-        modCompileOnly("vazkii.botania:Botania:${project.botania_version}") {
+        // No 1.20.4 version yet
+        /*modCompileOnly("vazkii.botania:Botania:${project.botania_version}") {
             transitive = false
             exclude group: "net.fabricmc"
             exclude group: "net.fabricmc.fabric-api"
-        }
+        }*/
 
         /*modCompileOnly("committee.nova.mkb.fabric:mkb-${project.minecraft_version}:${project.mkb_mod_version}") {
             transitive = false
@@ -394,15 +413,11 @@ subprojects {
         // testmodImplementation fabricApi.module("fabric-gametest-api-v1", fabric_version)
     }
 
-    fabricApi {
-        configureDataGeneration()
-    }
-
     loom {
         runs {
             datagen {
                 ideConfigGenerated = true
-                vmArg "-Dfabric-api.datagen.modid=$mod_id"
+                // vmArg "-Dfabric-api.datagen.modid=$mod_id"
             }
         }
     }
@@ -470,9 +485,27 @@ subprojects {
 
 def additionalMods(DependencyHandler deps) {
     switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
-        case "emi": deps.modLocalRuntime("dev.emi:emi-fabric:$project.emi_version") { exclude group: "net.fabricmc"; exclude group: "net.fabricmc.fabric-api" }; println "EMI loaded"; break
-        case "jei": deps.modLocalRuntime("mezz.jei:jei-$project.minecraft_version-fabric:$project.jei_version") { exclude group: "net.fabricmc"; exclude group: "net.fabricmc.fabric-api" }; println "JEI loaded"; break
-        case "rei": deps.modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$project.rei_version") { exclude group: "net.fabricmc"; exclude group: "net.fabricmc.fabric-api" }; println "REI loaded"; break
+        case "emi":
+            deps.modLocalRuntime("dev.emi:emi-fabric:$project.emi_version") {
+                exclude group: "net.fabricmc";
+                exclude group: "net.fabricmc.fabric-api"
+            }
+            println "EMI loaded"
+            break
+        case "jei":
+            deps.modLocalRuntime("mezz.jei:jei-$project.minecraft_version-fabric:$project.jei_version") {
+                exclude group: "net.fabricmc";
+                exclude group: "net.fabricmc.fabric-api"
+            }
+            println "JEI loaded"
+            break
+        case "rei":
+            deps.modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$project.rei_version") {
+                exclude group: "net.fabricmc";
+                exclude group: "net.fabricmc.fabric-api"
+            }
+            println "REI loaded"
+            break
         case "disabled": break
         default: println("Unknown recipe viewer specified: $project.recipe_viewer. Must be JEI, REI, EMI, or disabled.")
     }
