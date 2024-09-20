@@ -10,3 +10,7 @@
 	path = SophisticatedCore
 	url = https://github.com/Salandora/SophisticatedCore.git
 	branch = 1.19.x-fabric-dev
+[submodule "Porting-Lib"]
+	path = Porting-Lib
+	url = https://github.com/Salandora/Porting-Lib
+	branch = 1.20.4

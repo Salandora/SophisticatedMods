@@ -8,7 +8,7 @@ jobs:
           17-ubuntu,
           21-ubuntu
         ]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/openjdk/jdk:${{ matrix.java }}
       options: --user root
@@ -33,12 +33,12 @@ jobs:
           submodules: true
       - name: Create run_tests dir if non existent
         run: mkdir -p run_tests
-      - uses: gradle/wrapper-validation-action@v2
+      - uses: gradle/actions/wrapper-validation@v4
       - run: chmod +x ./gradlew
+      - name: Build Porting-Lib
+        run: chmod +x ./gradlew && ./gradlew build publishToMavenLocal
+        working-directory: ./Porting-Lib
       - name: Build with Gradle
-        env:
-          REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
-          READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
         run: ./gradlew check build publishToMavenLocal --stacktrace --warning-mode=fail -Porg.gradle.parallel.threads=4
       - name: Remove unnecessary build files and move necessary ones
         if: ${{ matrix.java == '21-ubuntu' }} # Only upload artifacts built from latest java
@@ -57,7 +57,7 @@ jobs:
           name: Maven Local
           path: /root/.m2/repository/com/github/salandora
   check_resources:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
       options: --user root
@@ -80,10 +80,8 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
+      - uses: gradle/actions/wrapper-validation@v4
       - run: chmod +x ./gradlew
       - name: Generate Resources
-        env:
-          REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
-          READ_PACKAGES_TOKEN: ${{ secrets.READ_PACKAGES_TOKEN }}
         run: ./gradlew generateResources --stacktrace --warning-mode=fail
       - run: if [ -n "$(git status --porcelain)" ]; then exit 1; fi
