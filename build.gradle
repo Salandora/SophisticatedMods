@@ -96,7 +96,7 @@ allprojects  {
         maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
         maven { url = "https://mvn.devos.one/snapshots/" } // Porting Lib
         maven { url = "https://mvn.devos.one/releases/" } // Porting Lib
-        maven { url = "https://jitpack.io/" } // for Porting Lib: Mixin Extras, Fabric ASM
+        //maven { url = "https://jitpack.io/" } // for Porting Lib: Mixin Extras, Fabric ASM
         maven { // Forge Config API Port
             name = "Fuzs Mod Resources"
             url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
