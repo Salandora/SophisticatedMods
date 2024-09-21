@@ -300,7 +300,7 @@ subprojects {
         // implementation(include(annotationProcessor("io.github.llamalad7:mixinextras-fabric:$project.mixinextras_version")))
 
         for (def module in port_lib_modules.split(',')) {
-            modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version" + System.getenv("GITHUB_RUN_NUMBER") + "+$minecraft_version")) {
+            modApi(include("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$port_lib_version+$minecraft_version")) {
                 exclude group: "net.fabricmc"
                 exclude group: "net.fabricmc.fabric-api"
             }
