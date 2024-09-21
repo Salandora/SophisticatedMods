@@ -38,6 +38,11 @@ jobs:
       - name: Build Porting-Lib
         run: chmod +x ./gradlew && ./gradlew build publishToMavenLocal
         working-directory: ./Porting-Lib
+      - uses: actions/upload-artifact@v4
+        if: ${{ !env.ACT && matrix.java == '21-ubuntu' }} # Only upload artifacts built from latest java
+        with:
+          name: Porting-Lib Artifacts
+          path: /root/.m2/repository/
       - name: Build with Gradle
         run: ./gradlew check build publishToMavenLocal --stacktrace --warning-mode=fail -Porg.gradle.parallel.threads=4
       - name: Remove unnecessary build files and move necessary ones
@@ -55,7 +60,7 @@ jobs:
         if: ${{ !env.ACT && matrix.java == '21-ubuntu' }} # Only upload artifacts built from latest java
         with:
           name: Maven Local
-          path: /root/.m2/repository/com/github/salandora
+          path: /root/.m2/repository
   check_resources:
     runs-on: ubuntu-latest
     container:
@@ -82,6 +87,9 @@ jobs:
           submodules: true
       - uses: gradle/actions/wrapper-validation@v4
       - run: chmod +x ./gradlew
+      - name: Build Porting-Lib
+        run: chmod +x ./gradlew && ./gradlew build publishToMavenLocal
+        working-directory: ./Porting-Lib
       - name: Generate Resources
         run: ./gradlew generateResources --stacktrace --warning-mode=fail
       - run: if [ -n "$(git status --porcelain)" ]; then exit 1; fi
