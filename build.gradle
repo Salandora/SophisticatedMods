@@ -97,7 +97,6 @@ loom {
             // property("mixin.debug.strict.unique=true") // strictly enforce that @Unique things are private
             property("mixin.debug.countInjections=true")
             vmArg("-XX:+AllowEnhancedClassRedefinition")
-            vmArg("-XX:+AllowEnhancedClassRedefinition")
             if (System.getenv("HOTSWAP_AGENT") != null) {
                 property("fabric.systemLibraries=" + System.getenv("HOTSWAP_AGENT"))
                 vmArg("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED")
