@@ -1,6 +1,32 @@
-/.gradle/
-/.idea/
-/workspace/run/
-/build/
-/run/
-/run_tests/
+# exclude all
+/*
+
+# include important folders
+# need gradle
+!gradle/
+!bintray/
+!gradlew
+!gradlew.bat
+!build.gradle
+!build.properties
+!gradle.properties
+!settings.gradle
+!.github/
+
+# include markdowns
+!README.md
+!LICENSE
+!COPYING.txt
+
+# include sourcecode
+!Sophisticated*/
+
+# include git important files
+!.gitmodules
+!.gitignore
+
+# code format to reduce noise in git commits
+!codeformat/
+
+# include web files
+!web/
