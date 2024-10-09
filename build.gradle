@@ -32,6 +32,7 @@ repositories {
 
     maven { url = "https://maven.terraformersmc.com/releases/" } // ModMenu, Emi
     maven { url = "https://maven.shedaniel.me/" } // REI and deps
+    maven { url = "https://modmaven.dev" } // Jei
     exclusiveContent {
         forRepository {
             maven {
