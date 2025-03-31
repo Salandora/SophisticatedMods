@@ -217,6 +217,5 @@ subprojects.each { p ->
 }
 
 tasks.register("fixIntelliJResources") {
-    group 'fabric'
+    group = 'fabric'
 }
-
