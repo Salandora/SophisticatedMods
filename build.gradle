@@ -63,10 +63,6 @@ dependencies {
 
     modLocalRuntime("dev.emi:trinkets:$project.trinkets_version")
 
-    modLocalRuntime("fuzs.puzzleslib:puzzleslib-fabric:8.1.29") {
-        transitive = false
-    }
-
     switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
         case "emi": modLocalRuntime("dev.emi:emi-fabric:$project.emi_version"); logger.lifecycle("EMI loaded"); break
         case "jei": modLocalRuntime("mezz.jei:jei-$project.minecraft_version-fabric:$project.jei_version"); logger.lifecycle("JEI loaded"); break
@@ -150,5 +146,5 @@ subprojects.each { p ->
 }
 
 tasks.register("fixIntelliJResources") {
-    group 'fabric'
+    group = 'fabric'
 }
