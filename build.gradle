@@ -2,7 +2,7 @@ plugins {
     id 'idea'
     id "java"
     id "java-library"
-    id 'fabric-loom' version '1.9.+' apply false
+    id 'fabric-loom' version '1.10.+' apply false
 }
 
 idea {
