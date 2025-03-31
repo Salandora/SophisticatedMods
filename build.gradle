@@ -79,6 +79,8 @@ dependencies {
 
     modLocalRuntime("maven.modrinth:sodium:$project.sodium_version")
 
+    modLocalRuntime("maven.modrinth:puzzles-lib:v21.1.33-1.21.1-Fabric")
+
     switch (accessory_mod.toLowerCase(Locale.ROOT)) {
         case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
         case "accessories":
