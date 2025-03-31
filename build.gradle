@@ -59,6 +59,8 @@ dependencies {
 
     modLocalRuntime("dev.emi:trinkets:$project.trinkets_version")
 
+    modLocalRuntime("maven.modrinth:puzzles-lib:v8.1.29-1.20.1-Fabric")
+
     switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
         case "emi": modLocalRuntime("dev.emi:emi-fabric:$project.emi_version"); logger.lifecycle("EMI loaded"); break
         case "jei": modLocalRuntime("mezz.jei:jei-$project.minecraft_version-fabric:$project.jei_version"); logger.lifecycle("JEI loaded"); break
