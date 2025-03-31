@@ -2,7 +2,7 @@ plugins {
     id 'idea'
     id "java"
     id "java-library"
-    id 'fabric-loom' version '1.8.+' apply false
+    id 'fabric-loom' version '1.10.+' apply false
 }
 
 idea {
@@ -25,6 +25,10 @@ repositories {
     maven { url = "https://maven.shedaniel.me/" } // REI and deps
     maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
     maven { url = "https://modmaven.dev" } // Jei
+    maven {
+        name = "Fuzs Mod Resources"
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+    }
     exclusiveContent {
         forRepository {
             maven {
@@ -59,7 +63,9 @@ dependencies {
 
     modLocalRuntime("dev.emi:trinkets:$project.trinkets_version")
 
-    modLocalRuntime("maven.modrinth:puzzles-lib:v8.1.29-1.20.1-Fabric")
+    modLocalRuntime("fuzs.puzzleslib:puzzleslib-fabric:8.1.29") {
+        transitive = false
+    }
 
     switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
         case "emi": modLocalRuntime("dev.emi:emi-fabric:$project.emi_version"); logger.lifecycle("EMI loaded"); break
