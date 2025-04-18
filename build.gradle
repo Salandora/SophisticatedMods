@@ -273,3 +273,47 @@ tasks.register('runProductionServer', ServerProductionRunTask) {
     jvmArgs.addAll(debugArgs)
     programArgs.add("nogui")
 }
+
+// Run configuration hack to add a before run task
+tasks.register('injectIntellijBeforeRun') {
+    group = 'ide'
+    description = 'Inject Gradle.BeforeRunTask into IntelliJ run configurations'
+
+    onlyIf {
+        // Only run if IDEA sync has created configurations
+        file(".idea/runConfigurations").exists()
+    }
+
+    def runNames = loom.runs.collect { it.configName.replace(' ', '_').replace('.', '_') }
+    file(".idea/runConfigurations").eachFile { configFile ->
+        try {
+            if (!runNames.contains(configFile.name.replace('.xml', ''))) {
+                return
+            }
+
+            def xml = new groovy.xml.XmlParser().parse(configFile)
+            xml.each { config ->
+                if (config.@type == 'Application' && config.@factoryName == 'Application') {
+                    def method = config.find { it.@v == "2" } ?: config.appendNode('method', [v: "2"])
+
+                    if (!method.find { it.@name == 'Gradle.BeforeRunTask' }) {
+                        method.appendNode('option', [
+                                name: 'Gradle.BeforeRunTask',
+                                enabled: 'true',
+                                tasks: 'fixIntelliJResources',
+                                externalProjectPath: '$PROJECT_DIR$'
+                        ])
+
+                        // Write modified XML back
+                        def writer = new StringWriter()
+                        new groovy.xml.XmlNodePrinter(new PrintWriter(writer)).print(xml)
+                        configFile.text = writer.toString()
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to process ${configFile.name}: ${e.message}")
+        }
+    }
+}
+tasks.findByName('ideaSyncTask')?.finalizedBy(tasks.named('injectIntellijBeforeRun'))
