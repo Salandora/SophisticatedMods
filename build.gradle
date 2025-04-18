@@ -1,3 +1,4 @@
+import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.prod.ClientProductionRunTask
 import net.fabricmc.loom.task.prod.ServerProductionRunTask
 
@@ -253,6 +254,11 @@ subprojects {
                 ideConfigGenerated = true
             }
         }
+
+        tasks.named('remapJar', RemapJarTask) { // Targets the Fabric Loom task
+            // Set output directory to root project's "output" folder
+            destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+        }
     }
 }
 
@@ -264,8 +270,17 @@ subprojects.each { p ->
     loom.mods.register(p.name) {
         sourceSet p.sourceSets.main
     }
+}
 
-    remapJar.dependsOn("${p.path}:remapJar")
+// Disable JAR tasks in the root project (after evaluation)
+afterEvaluate {
+    if (project == rootProject) {
+        tasks.withType(AbstractArchiveTask).configureEach { task ->
+            if (task.name in ["jar", "remapJar"]) {
+                task.enabled = false
+            }
+        }
+    }
 }
 
 tasks.register("fixIntelliJResources") {
