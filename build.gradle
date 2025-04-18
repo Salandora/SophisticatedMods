@@ -127,82 +127,44 @@ loom {
     }
 
     runs {
-        client {
-            client()
+        def configureClientRun = { run, username ->
+            run.client()
+            run.configName "Minecraft ${run.name.capitalize()} ${project.minecraft_version}"
+            run.runDir "run/${project.minecraft_version}/${run.name}"
+            run.programArg("--username $username")
 
-            configName = "Minecraft Client ${project.minecraft_version}"
-            runDir "run/${project.minecraft_version}/client"
-
-            programArg("--username Dev") // set a fixed username for the client
-            if (System.getenv("HOTSWAP_AGENT") != null) {
-                property("fabric.systemLibraries=" + System.getenv("HOTSWAP_AGENT"))
-                vmArg("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED")
-                vmArg("--add-opens=java.base/java.lang=ALL-UNNAMED")
-                vmArg("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED")
-                vmArg("--add-opens=java.base/java.io=ALL-UNNAMED")
-                vmArg("--add-opens=java.desktop/java.beans=ALL-UNNAMED")
-                vmArg("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED")
+            // Common HOTSWAP_AGENT configuration
+            if (System.getenv("HOTSWAP_AGENT")) {
+                run.property("fabric.systemLibraries", System.getenv("HOTSWAP_AGENT"))
+                [
+                        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+                        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+                        "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+                        "--add-opens=java.base/java.io=ALL-UNNAMED",
+                        "--add-opens=java.desktop/java.beans=ALL-UNNAMED",
+                        "--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED"
+                ].each { arg -> run.vmArg(arg) }
             }
 
-            try {
-                afterEvaluate {
-                    def mixinDep = this.configurations.compileClasspath.incoming.artifactView {
-                        componentFilter {
-                            it instanceof ModuleComponentIdentifier
-                                    && it.module == "sponge-mixin"
-                        }
+            // Common mixin configuration
+            afterEvaluate {
+                def mixinDep = configurations.compileClasspath.incoming.artifactView {
+                    componentFilter { id ->
+                        id instanceof ModuleComponentIdentifier && id.module == "sponge-mixin"
                     }
+                }.files.find()
 
-                    if (mixin != null) {
-                        vmArg("-javaagent:${mixinDep.files.first().path}")
-                        println("[Info]: Mixin Hotswap setup finished")
-                    } else {
-                        println("[Warning]: Unable to locate file path for Mixin jar")
-                    }
+                if (mixinDep) {
+                    run.vmArg("-javaagent:${mixinDep.path}")
+                    println("[Info]: Mixin Hotswap setup finished for ${run.name}")
+                } else {
+                    println("[Warning]: Missing Mixin dependency for ${run.name}")
                 }
-            } catch (Exception e) {
-                println("[Error]: Mixin Hotswap setup failed!")
-                e.printStackTrace()
             }
         }
-        client2 {
-            client()
 
-            configName = "Minecraft Client2 ${project.minecraft_version}"
-            runDir "run/${project.minecraft_version}/client2"
-
-            programArg("--username Dev2") // set a fixed username for the client
-            if (System.getenv("HOTSWAP_AGENT") != null) {
-                property("fabric.systemLibraries=" + System.getenv("HOTSWAP_AGENT"))
-                vmArg("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED")
-                vmArg("--add-opens=java.base/java.lang=ALL-UNNAMED")
-                vmArg("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED")
-                vmArg("--add-opens=java.base/java.io=ALL-UNNAMED")
-                vmArg("--add-opens=java.desktop/java.beans=ALL-UNNAMED")
-                vmArg("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED")
-            }
-
-            try {
-                afterEvaluate {
-                    def mixinDep = this.configurations.compileClasspath.incoming.artifactView {
-                        componentFilter {
-                            it instanceof ModuleComponentIdentifier
-                                    && it.module == "sponge-mixin"
-                        }
-                    }
-
-                    if (mixin != null) {
-                        vmArg("-javaagent:${mixinDep.files.first().path}")
-                        println("[Info]: Mixin Hotswap setup finished")
-                    } else {
-                        println("[Warning]: Unable to locate file path for Mixin jar")
-                    }
-                }
-            } catch (Exception e) {
-                println("[Error]: Mixin Hotswap setup failed!")
-                e.printStackTrace()
-            }
-        }
+        client { configureClientRun(it, "Dev") }
+        client2 { configureClientRun(it, "Dev2") }
 
         server {
             server()
