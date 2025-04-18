@@ -13,7 +13,7 @@ def debugArgs = [
     "-enableassertions",
     "-Dmixin.debug.verify=true",
     //"-Dmixin.debug.strict=true",
-    "-Dmixin.debug.countInjections=true",
+    //"-Dmixin.debug.countInjections=true",
     "-XX:+AllowEnhancedClassRedefinition"
 ]
 
