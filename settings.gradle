@@ -12,3 +12,5 @@ include 'SophisticatedCore'
 include 'SophisticatedBackpacks'
 include 'SophisticatedStorage'
 include 'SophisticatedStorageInMotion'
+
+include 'SophisticatedFabricCompatibility'
