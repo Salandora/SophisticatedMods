@@ -133,7 +133,7 @@ repositories {
 }
 
 allprojects {
-    apply plugin: "fabric-loom"
+    apply plugin: 'fabric-loom'
 }
 
 configurations {
@@ -320,10 +320,8 @@ loom {
 
 subprojects {
     afterEvaluate {
-        loom.runs {
-            datagen {
-                ideConfigGenerated = true
-            }
+        loom.runs.named("datagen") {
+            ideConfigGenerated = true
         }
 
         tasks.named('remapJar', RemapJarTask) { // Targets the Fabric Loom task
