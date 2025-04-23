@@ -205,6 +205,11 @@ dependencies {
     modLocalRuntime("io.wispforest:owo-lib:${project.owo_version}")
     modLocalRuntime("software.bernie.geckolib:geckolib-fabric-1.21.1:${project.geckolib_version}")
     modLocalRuntime("earth.terrarium.athena:athena-fabric-1.21:${project.athena_version}")
+    // modLocalRuntime("curse.maven:open-parties-and-claims-636608:6242911")
+
+    // Litematica
+    modLocalRuntime("maven.modrinth:malilib:0.21.7")
+    modLocalRuntime("maven.modrinth:litematica:0.19.57")
 
     // Blur+
     modLocalRuntime("maven.modrinth:blur-plus:${project.blurplus_version}")
