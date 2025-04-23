@@ -127,7 +127,11 @@ dependencies {
     modLocalRuntime("maven.modrinth:simple-voice-chat:${project.simple_voice_chat_version}")
     modLocalRuntime("maven.modrinth:audioplayer:${project.audioplayer_version}")
 
-    modLocalRuntime("curse.maven:open-parties-and-claims-636608:6242911")
+    // modLocalRuntime("curse.maven:open-parties-and-claims-636608:6242911")
+
+    // Litematica
+    modLocalRuntime("maven.modrinth:malilib:0.21.7")
+    modLocalRuntime("maven.modrinth:litematica:0.19.57")
 
     /*modLocalRuntime("curse.maven:legendary-tooltips-fabric-542478:6400658")
     modLocalRuntime("curse.maven:iceberg-fabric-539382:6375475")
