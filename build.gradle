@@ -146,10 +146,6 @@ configurations.configureEach {
     resolutionStrategy {
         force "net.fabricmc:fabric-loader:$project.loader_version"
         force "net.fabricmc.fabric-api:fabric-api:$project.fabric_version"
-
-        force "com.communi-suggestu.saecularia-caudices:fabric:21.1.+"
-        //force "com.communi-suggestu.scena:core:21.1.+"
-        force "com.communi-suggestu.scena:fabric:21.1.+"
     }
 }
 
@@ -210,6 +206,9 @@ dependencies {
     // Litematica
     modLocalRuntime("maven.modrinth:malilib:0.21.7")
     modLocalRuntime("maven.modrinth:litematica:0.19.57")
+
+    // Carpetmod
+    modLocalRuntime("maven.modrinth:carpet:${project.carpet_version}")
 
     // Blur+
     modLocalRuntime("maven.modrinth:blur-plus:${project.blurplus_version}")
