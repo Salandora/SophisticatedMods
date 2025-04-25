@@ -323,9 +323,7 @@ loom {
 
 subprojects {
     afterEvaluate {
-        loom.runs.named("datagen") {
-            ideConfigGenerated = true
-        }
+        loom.runs.findByName("datagen")?.setIdeConfigGenerated(true)
 
         tasks.named('remapJar', RemapJarTask) { // Targets the Fabric Loom task
             // Set output directory to root project's "output" folder
