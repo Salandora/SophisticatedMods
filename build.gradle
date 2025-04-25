@@ -76,6 +76,13 @@ repositories {
         name = "Fuzs Mod Resources"
         url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
     }
+    maven {
+        url "https://maven.twelveiterations.com/repository/maven-public/"
+
+        content {
+            includeGroup "net.blay09.mods"
+        }
+    }
 }
 
 allprojects {
@@ -146,6 +153,13 @@ dependencies {
     /*modLocalRuntime("curse.maven:legendary-tooltips-fabric-542478:6400658")
     modLocalRuntime("curse.maven:iceberg-fabric-539382:6375475")
     modLocalRuntime("curse.maven:prism-fabric-665526:6372978")*/
+
+    // CraftingTweaks
+    modLocalRuntime("net.blay09.mods:craftingtweaks-fabric:${project.craftingtweaks_version}")
+    modLocalRuntime("net.blay09.mods:kuma-api-fabric:${project.kuma_version}")
+    modLocalRuntime("net.blay09.mods:balm-fabric:${project.balm_version}") {
+        changing = project.balm_version.contains("SNAPSHOT")
+    }
 
     // modLocalRuntime("maven.modrinth:puzzles-lib:v21.1.33-1.21.1-Fabric")
 
