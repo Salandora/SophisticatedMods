@@ -29,23 +29,6 @@ repositories {
     mavenLocal()
     mavenCentral()
 
-    maven {
-        name = 'ParchmentMC'
-        url = 'https://maven.parchmentmc.org'
-    }
-
-    maven { // FAPI, Loader
-        url = "https://maven.fabricmc.net/"
-    }
-    maven { url = "https://maven.quiltmc.org/repository/release" } // QM
-
-    maven { // placeholder api for ModMenu
-        name = "Nucleoid"
-        url = "https://maven.nucleoid.xyz/"
-    }
-    maven { url = "https://maven.terraformersmc.com/" } // ModMenu, Emi
-    maven { url = "https://maven.shedaniel.me/" } // REI and deps
-    maven { url = "https://modmaven.dev" } // Jei
     exclusiveContent {
         forRepository {
             maven {
@@ -68,11 +51,74 @@ repositories {
             includeGroup "curse.maven"
         }
     }
-    maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
-    maven { url = 'https://maven.wispforest.io/releases' } // Accessories
+    exclusiveContent {
+        forRepositories(
+                maven { url = "https://mvn.devos.one/snapshots/" },
+                maven { url = "https://mvn.devos.one/releases/" }
+        )
+        filter {
+            includeGroup "io.github.fabricators_of_create.Porting-Lib"
+        }
+    }
+
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
+    maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
+    maven { url = "https://maven.quiltmc.org/repository/release" } // QM
+
     maven { // Forge Config API Port
         name = "Fuzs Mod Resources"
         url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+        content {
+            includeGroup "fuzs.forgeconfigapiport"
+        }
+    }
+    maven { // Jei
+        url = "https://modmaven.dev"
+        content {
+            includeGroup "mezz.jei"
+        }
+    }
+    maven {  // REI and deps
+        url = "https://maven.shedaniel.me/"
+        content {
+            includeGroupAndSubgroups "me.shedaniel"
+            includeGroupAndSubgroups "dev.architectury"
+        }
+    }
+    maven {  // Emi and ModMenu
+        url = "https://maven.terraformersmc.com/releases/"
+        content {
+            includeGroupAndSubgroups "com.terraformersmc"
+            includeGroupAndSubgroups "dev.emi"
+        }
+    }
+    maven { // Chipped
+        url = "https://maven.teamresourceful.com/repository/maven-public/"
+        content {
+            includeGroupAndSubgroups "earth.terrarium"
+            includeGroupAndSubgroups "com.teamresourceful"
+        }
+    }
+    maven { // CraftingTweaks
+        url = "https://maven.twelveiterations.com/repository/maven-public/"
+        content {
+            includeGroup "net.blay09.mods"
+        }
+    }
+    maven {  // Accessories
+        url = 'https://maven.wispforest.io/releases'
+        content {
+            includeGroupAndSubgroups "io.wispforest"
+        }
+    }
+    maven { // CCA
+        url = "https://maven.ladysnake.org/releases"
+        content {
+            includeGroup "org.ladysnake.cardinal-components-api"
+        }
     }
 
     maven {
