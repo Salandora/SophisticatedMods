@@ -1,18 +1,21 @@
 [submodule "SophisticatedStorage"]
 	path = SophisticatedStorage
-	url = https://github.com/Salandora/SophisticatedStorage.git
-	branch = 1.19.x-fabric-dev
+	url = git@github.com:Salandora/SophisticatedStorage.git
 [submodule "SophisticatedBackpacks"]
 	path = SophisticatedBackpacks
-	url = https://github.com/Salandora/SophisticatedBackpacks.git
-	branch = 1.19.x-fabric-dev
+	url = git@github.com:Salandora/SophisticatedBackpacks.git
 [submodule "SophisticatedCore"]
 	path = SophisticatedCore
-	url = https://github.com/Salandora/SophisticatedCore.git
-	branch = 1.19.x-fabric-dev
+	url = git@github.com:Salandora/SophisticatedCore.git
 [submodule "SophisticatedStorageInMotion"]
 	path = SophisticatedStorageInMotion
 	url = git@github.com:Salandora/SophisticatedStorageInMotion.git
 [submodule "SophisticatedFabricCompatibility"]
 	path = SophisticatedFabricCompatibility
-	url = https://github.com/Salandora/SophisticatedFabricCompatibility
+	url = git@github.com:Salandora/SophisticatedFabricCompatibility
+[submodule "SophisticatedStorageCreateIntegration"]
+	path = SophisticatedStorageCreateIntegration
+	url = git@github.com:Salandora/SophisticatedStorageCreateIntegration.git
+[submodule "SophisticatedBackpacksCreateIntegration"]
+	path = SophisticatedBackpacksCreateIntegration
+	url = git@github.com:Salandora/SophisticatedBackpacksCreateIntegration.git
