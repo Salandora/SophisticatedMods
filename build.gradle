@@ -70,8 +70,15 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    maven {
+        name = "Fuzs Mod Resources"
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+    }
     maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
     maven { url = 'https://maven.wispforest.io/releases' } // Accessories
+    maven { url = "https://mvn.devos.one/releases" } // Porting Lib releases
+    maven { url = "https://mvn.devos.one/snapshots" } // Create and several dependencies
+    maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
 }
 
 allprojects {
@@ -112,6 +119,9 @@ dependencies {
     modLocalRuntime("maven.modrinth:blur-plus:${project.blurplus_version}-fabric")
     modLocalRuntime("io.github.ladysnake:satin:${project.satin_version}")
     modLocalRuntime("maven.modrinth:midnightlib:${project.midnightlib_version}-fabric")
+
+    // Create - dependencies are added transitively
+    modImplementation("com.simibubi.create:create-fabric-$minecraft_version:$create_version")
 
     modLocalRuntime("dev.emi:trinkets:$project.trinkets_version")
 
