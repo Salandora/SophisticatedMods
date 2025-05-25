@@ -20,7 +20,7 @@ def debugArgs = [
 idea {
     module {
         downloadJavadoc = true
-        downloadSources = true
+        // downloadSources = true
     }
 }
 
@@ -35,9 +35,6 @@ repositories {
 
     maven { // FAPI, Loader
         url = "https://maven.fabricmc.net/"
-        content {
-            excludeGroup "net.fabricmc.fabric-api"
-        }
     }
     maven { url = "https://maven.quiltmc.org/repository/release" } // QM
 
@@ -127,7 +124,11 @@ dependencies {
     modLocalRuntime("maven.modrinth:simple-voice-chat:${project.simple_voice_chat_version}")
     modLocalRuntime("maven.modrinth:audioplayer:${project.audioplayer_version}")
 
-    modLocalRuntime("curse.maven:open-parties-and-claims-636608:6242911")
+    // Open Parties and Claims
+    //modLocalRuntime("curse.maven:open-parties-and-claims-636608:${project.opac_version}")
+
+    // QuickBench
+    modLocalRuntime("curse.maven:quickbench-914551:${project.quickbench_version}")
 
     /*modLocalRuntime("curse.maven:legendary-tooltips-fabric-542478:6400658")
     modLocalRuntime("curse.maven:iceberg-fabric-539382:6375475")
