@@ -10,9 +10,9 @@
 [submodule "SophisticatedStorageInMotion"]
 	path = SophisticatedStorageInMotion
 	url = git@github.com:Salandora/SophisticatedStorageInMotion.git
-[submodule "SophisticatedFabricCompatibility"]
-	path = SophisticatedFabricCompatibility
-	url = git@github.com:Salandora/SophisticatedFabricCompatibility
+[submodule "SophisticatedFabricIntegrations"]
+	path = SophisticatedFabricIntegrations
+	url = git@github.com:Salandora/SophisticatedFabricIntegrations
 [submodule "SophisticatedStorageCreateIntegration"]
 	path = SophisticatedStorageCreateIntegration
 	url = git@github.com:Salandora/SophisticatedStorageCreateIntegration.git

@@ -16,4 +16,4 @@ include 'SophisticatedStorage'
 include 'SophisticatedStorageInMotion'
 //include 'SophisticatedStorageCreateIntegration'
 
-include 'SophisticatedFabricCompatibility'
+include 'SophisticatedFabricIntegrations'
