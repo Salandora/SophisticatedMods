@@ -21,12 +21,14 @@
 # include sourcecode
 !Sophisticated*/
 
+# include buildSrc
+!buildSrc/
+buildSrc/.gradle/
+buildSrc/build/
+
 # include git important files
 !.gitmodules
 !.gitignore
 
 # code format to reduce noise in git commits
 !codeformat/
-
-# include web files
-!web/
