@@ -59,8 +59,8 @@ repositories {
     exclusiveContent {
         forRepository {
             maven {
-                name "CurseForge"
-                url "https://cursemaven.com"
+                name = "CurseForge"
+                url = "https://cursemaven.com"
             }
         }
         filter {
@@ -187,8 +187,8 @@ loom {
     runs {
         def configureClientRun = { run, username ->
             run.client()
-            run.configName "Minecraft ${run.name.capitalize()} ${project.minecraft_version}"
-            run.runDir "run/${project.minecraft_version}/${run.name}"
+            run.configName = "Minecraft ${run.name.capitalize()} ${project.minecraft_version}"
+            run.runDir = "run/${project.minecraft_version}/${run.name}"
             run.programArg("--username $username")
 
             // Common HOTSWAP_AGENT configuration
