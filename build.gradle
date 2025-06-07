@@ -120,7 +120,6 @@ dependencies {
     modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:$project.cloth_config_version")
 
     modLocalRuntime("com.terraformersmc:modmenu:$project.modmenu_version")
-    productionMods("com.terraformersmc:modmenu:$project.modmenu_version")
 
     modLocalRuntime("maven.modrinth:sodium:$project.sodium_version")
 
@@ -138,7 +137,7 @@ dependencies {
     //modLocalRuntime("curse.maven:open-parties-and-claims-636608:${project.opac_version}")
 
     // Yet Another World Protector
-    modImplementation "curse.maven:yawp-663276:${project.yawp_version}"
+    modImplementation("curse.maven:yawp-663276:${project.yawp_version}")
 
     // QuickBench
     modLocalRuntime("curse.maven:quickbench-914551:${project.quickbench_version}")
@@ -288,8 +287,7 @@ dependencies {
     }
 }
 
-def productionMods = project.files(configurations.productionMods)
-
+def productionMods = project.files(configurations.productionMods, configurations.modImplementation, configurations.modLocalRuntime)
 tasks.register('runProductionClient', ClientProductionRunTask) {
     runDir.set(project.layout.getProjectDirectory().dir("run").dir("${project.minecraft_version}_production").dir("client"))
 
