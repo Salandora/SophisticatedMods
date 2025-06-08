@@ -10,3 +10,6 @@
 	path = SophisticatedCore
 	url = https://github.com/Salandora/SophisticatedCore.git
 	branch = 1.19.x-fabric-dev
+[submodule "SophisticatedStorageInMotion"]
+	path = SophisticatedStorageInMotion
+	url = git@github.com:Salandora/SophisticatedStorageInMotion.git
