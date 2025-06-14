@@ -72,9 +72,15 @@ repositories {
         url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
     }
     maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
-    maven { url = 'https://maven.wispforest.io/releases' } // Accessories
+    maven { url = "https://maven.wispforest.io/releases" } // Accessories
     maven { url = "https://mvn.devos.one/releases" } // Porting Lib releases
     maven { url = "https://mvn.devos.one/snapshots" } // Create and several dependencies
+    maven { // Reach Entity Attributes
+        url = "https://maven.jamieswhiteshirt.com/libs-release"
+        content {
+            includeGroup "com.jamieswhiteshirt"
+        }
+    }
     maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
 
     maven {
@@ -146,6 +152,15 @@ dependencies {
     modLocalRuntime("curse.maven:prism-fabric-665526:6372978")*/
 
     // modLocalRuntime("maven.modrinth:puzzles-lib:v21.1.33-1.21.1-Fabric")
+
+    // Litematica
+    modLocalRuntime("curse.maven:litematica-308892:$project.litematica_cf_file_id")
+    modLocalRuntime("curse.maven:malilib-303119:$project.malilib_cf_file_id")
+
+    // AudioPlayer
+    modLocalRuntime("maven.modrinth:admiral:${project.admiral_version}")
+    modLocalRuntime("maven.modrinth:simple-voice-chat:${project.simple_voice_chat_version}")
+    modLocalRuntime("maven.modrinth:audioplayer:${project.audioplayer_version}")
 
     // Double Slabs
     // modLocalRuntime("curse.maven:double-slabs-350179:6843160")
@@ -320,3 +335,47 @@ tasks.register('generateChangelog') {
         subproject.tasks.named("generateChangelog").get()
     })
 }
+
+// Run configuration hack to add a before run task
+tasks.register('injectIntellijBeforeRun') {
+    group = 'ide'
+    description = 'Inject Gradle.BeforeRunTask into IntelliJ run configurations'
+
+    onlyIf {
+        // Only run if IDEA sync has created configurations
+        file(".idea/runConfigurations").exists()
+    }
+
+    def runNames = loom.runs.collect { it.configName.replace(' ', '_').replace('.', '_') }
+    file(".idea/runConfigurations").eachFile { configFile ->
+        try {
+            if (!runNames.contains(configFile.name.replace('.xml', ''))) {
+                return
+            }
+
+            def xml = new groovy.xml.XmlParser().parse(configFile)
+            xml.each { config ->
+                if (config.@type == 'Application' && config.@factoryName == 'Application') {
+                    def method = config.find { it.@v == "2" } ?: config.appendNode('method', [v: "2"])
+
+                    if (!method.find { it.@name == 'Gradle.BeforeRunTask' }) {
+                        method.appendNode('option', [
+                                name: 'Gradle.BeforeRunTask',
+                                enabled: 'true',
+                                tasks: 'fixIntelliJResources',
+                                externalProjectPath: '$PROJECT_DIR$'
+                        ])
+
+                        // Write modified XML back
+                        def writer = new StringWriter()
+                        new groovy.xml.XmlNodePrinter(new PrintWriter(writer)).print(xml)
+                        configFile.text = writer.toString()
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to process ${configFile.name}: ${e.message}")
+        }
+    }
+}
+tasks.findByName('ideaSyncTask')?.finalizedBy(tasks.named('injectIntellijBeforeRun'))
