@@ -81,8 +81,13 @@ repositories {
             includeGroup "com.jamieswhiteshirt"
         }
     }
-    maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
-
+    maven {
+        name 'Xander Maven'
+        url 'https://maven.isxander.dev/releases'
+        content {
+            includeGroup "dev.isxander"
+        }
+    }
     maven {
         url "https://maven.twelveiterations.com/repository/maven-public/"
         content {
@@ -136,7 +141,7 @@ dependencies {
     //modLocalRuntime("curse.maven:open-parties-and-claims-636608:${project.opac_version}")
 
     // Yet Another World Protector
-    modImplementation "curse.maven:yawp-663276:${project.yawp_version}"
+    modLocalRuntime "curse.maven:yawp-663276:${project.yawp_version}"
 
     // Blur+
     modLocalRuntime("maven.modrinth:blur-plus:${project.blurplus_version}-fabric")
@@ -144,7 +149,7 @@ dependencies {
     modLocalRuntime("maven.modrinth:midnightlib:${project.midnightlib_version}-fabric")
 
     // Create - dependencies are added transitively
-    modImplementation("com.simibubi.create:create-fabric-$minecraft_version:$create_version")
+    modLocalRuntime("com.simibubi.create:create-fabric-$minecraft_version:$create_version")
 
     // Legendary Tooltips
     /*modLocalRuntime("curse.maven:legendary-tooltips-fabric-542478:6400658")
@@ -176,6 +181,11 @@ dependencies {
     // Polytone
     //modLocalRuntime("curse.maven:polytone-958094:7035028")
     //localRuntime("net.objecthunter:exp4j:0.4.8")
+
+    // Flow
+    modLocalRuntime("maven.modrinth:flow:${project.flow_version}")
+    modLocalRuntime("maven.modrinth:mru:${project.mru_version}")
+    modLocalRuntime("dev.isxander:yet-another-config-lib:${project.yacl_version}")
 
     switch (accessory_mod.toLowerCase(Locale.ROOT)) {
         case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
