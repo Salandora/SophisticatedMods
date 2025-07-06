@@ -19,3 +19,6 @@
 [submodule "SophisticatedBackpacksCreateIntegration"]
 	path = SophisticatedBackpacksCreateIntegration
 	url = git@github.com:Salandora/SophisticatedBackpacksCreateIntegration.git
+[submodule "SophisticatedLibrary"]
+	path = SophisticatedLibrary
+	url = git@github.com:Salandora/SophisticatedLibrary.git
