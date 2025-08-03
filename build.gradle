@@ -275,3 +275,19 @@ tasks.register('runProductionServer', ServerProductionRunTask) {
     jvmArgs.addAll(debugArgs)
     programArgs.add("nogui")
 }
+
+tasks.register('generateChangelog') {
+    doLast {
+        subprojects.each {
+            def projectMessage = "# " + it.name + " #"
+            println("#".repeat(projectMessage.length()))
+            println(projectMessage)
+            println("#".repeat(projectMessage.length()))
+            println(it.ext.changelog)
+        }
+    }
+
+    dependsOn subprojects.collect( subproject -> {
+        subproject.tasks.named("generateChangelog").get()
+    })
+}
