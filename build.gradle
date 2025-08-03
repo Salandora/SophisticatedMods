@@ -300,7 +300,7 @@ tasks.register('runProductionServer', ServerProductionRunTask) {
 
     mods.setFrom productionMods
     jvmArgs.addAll(debugArgs)
-    programArgs.add("nogui")
+    programArgs.empty().add("gui")
 }
 
 // Run configuration hack to add a before run task
