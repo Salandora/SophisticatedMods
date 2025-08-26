@@ -7,6 +7,7 @@ plugins {
     id "java"
     id "java-library"
     id 'fabric-loom' version '1.10.+' apply false
+    //id 'org.jetbrains.kotlin.jvm' version "2.0.21"
 }
 
 def debugArgs = [
@@ -83,6 +84,10 @@ repositories {
         name = 'teamresourceful'
         url = "https://maven.teamresourceful.com/repository/maven-public/"
     }
+
+
+    maven {url = "https://maven.impactdev.net/repository/development/" }
+
 }
 
 allprojects {
@@ -159,6 +164,13 @@ dependencies {
     modLocalRuntime("curse.maven:prism-fabric-665526:6372978")*/
 
     // modLocalRuntime("maven.modrinth:puzzles-lib:v21.1.33-1.21.1-Fabric")
+
+    // Cobblemon
+    /*modImplementation("net.fabricmc:fabric-language-kotlin:1.12.3+kotlin.2.0.21")
+    modLocalRuntime("com.cobblemon:fabric:1.6.1+1.21.1")*/
+
+    // Double Slabs
+    modLocalRuntime("curse.maven:double-slabs-350179:6839897")
 
     switch (accessory_mod.toLowerCase(Locale.ROOT)) {
         case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
