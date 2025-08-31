@@ -24,6 +24,7 @@
 # include buildSrc
 !buildSrc/
 buildSrc/.gradle/
+buildSrc/out/
 buildSrc/build/
 
 # include git important files

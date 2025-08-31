@@ -6,7 +6,7 @@ plugins {
     id 'idea'
     id "java"
     id "java-library"
-    id 'fabric-loom' version '1.10.+' apply false
+    id 'fabric-loom' version '1.11.+' apply false
     //id 'org.jetbrains.kotlin.jvm' version "2.0.21"
 }
 
@@ -25,12 +25,9 @@ idea {
     }
 }
 
-def targetJavaVersion = 21
 java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
+    // loom requires java >= 21
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
 
 repositories {
@@ -138,6 +135,7 @@ repositories {
         name = 'teamresourceful'
         url = "https://maven.teamresourceful.com/repository/maven-public/"
     }
+
     maven {
         url "https://maven.twelveiterations.com/repository/maven-public/"
 
@@ -152,6 +150,7 @@ repositories {
         url 'https://ldtteam.jfrog.io/artifactory/communi-suggestu-maven'
         name 'Communi-Suggestu Maven'
     }
+
     maven {
         url 'https://ldtteam.jfrog.io/artifactory/chisels-and-bits'
         name 'Chisels and Bits'
