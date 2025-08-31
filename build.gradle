@@ -25,11 +25,6 @@ idea {
     }
 }
 
-java {
-    // loom requires java >= 21
-    toolchain.languageVersion = JavaLanguageVersion.of(21)
-}
-
 repositories {
     mavenLocal()
     mavenCentral()
@@ -205,8 +200,8 @@ configurations.configureEach {
 dependencies {
     minecraft("com.mojang:minecraft:$project.minecraft_version")
     mappings(loom.layered {
-        it.officialMojangMappings()
-        it.parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${project.parchment_version}@zip")
     })
 
     modImplementation("net.fabricmc:fabric-loader:$project.loader_version")
@@ -372,6 +367,17 @@ loom {
     runs.configureEach {
         vmArgs(debugArgs)
     }
+}
+
+tasks.named("compileJava") {
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+java {
+    // loom requires java >= 21
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
 
 subprojects {
