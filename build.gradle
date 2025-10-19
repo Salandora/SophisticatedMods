@@ -76,6 +76,13 @@ repositories {
     maven { url = "https://mvn.devos.one/releases" } // Porting Lib releases
     maven { url = "https://mvn.devos.one/snapshots" } // Create and several dependencies
     maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
+
+    maven {
+        url "https://maven.twelveiterations.com/repository/maven-public/"
+        content {
+            includeGroup "net.blay09.mods"
+        }
+    }
 }
 
 allprojects {
@@ -108,8 +115,10 @@ dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
+    // Config mods
     modLocalRuntime("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$project.forge_config_api_port_version")
 
+    // Modmenu
     modLocalRuntime("com.terraformersmc:modmenu:$project.modmenu_version")
 
     // Open Parties and Claims
@@ -135,6 +144,18 @@ dependencies {
 
     // Double Slabs
     // modLocalRuntime("curse.maven:double-slabs-350179:6843160")
+
+    // Crafting Tweaks
+    //modLocalRuntime("net.blay09.mods:balm-fabric:7.3.37+1.20.1")
+    modLocalRuntime("net.blay09.mods:craftingtweaks-fabric:18.2.6+1.20.1")
+
+    // Recipe Essentials
+    modLocalRuntime("curse.maven:recipe-essentials-forge-fabric-907856:6202570")
+    modLocalRuntime("curse.maven:cupboard-326652:5470034")
+
+    // Polytone
+    modLocalRuntime("curse.maven:polytone-958094:7035028")
+    localRuntime("net.objecthunter:exp4j:0.4.8")
 
     switch (accessory_mod.toLowerCase(Locale.ROOT)) {
         case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
