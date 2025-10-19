@@ -126,11 +126,14 @@ dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
+    // SophisticatedFabricIntegrations
+    modLocalRuntime("com.github.salandora:SophisticatedFabricIntegrations")
+
     // Config mods
-    modLocalRuntime("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$project.forge_config_api_port_version")
+    modLocalRuntime("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${project.forge_config_api_port_version}")
 
     // Modmenu
-    modLocalRuntime("com.terraformersmc:modmenu:$project.modmenu_version")
+    modLocalRuntime("com.terraformersmc:modmenu:${project.modmenu_version}")
 
     // Tom's Storage Network
     modLocalRuntime("maven.modrinth:toms-storage:${project.toms_storage_version}")
@@ -149,7 +152,7 @@ dependencies {
     modLocalRuntime("maven.modrinth:midnightlib:${project.midnightlib_version}-fabric")
 
     // Create - dependencies are added transitively
-    modLocalRuntime("com.simibubi.create:create-fabric-$minecraft_version:$create_version")
+    modLocalRuntime("com.simibubi.create:create-fabric-${minecraft_version}:${create_version}")
 
     // Legendary Tooltips
     /*modLocalRuntime("curse.maven:legendary-tooltips-fabric-542478:6400658")
