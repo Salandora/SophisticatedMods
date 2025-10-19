@@ -6,7 +6,7 @@ plugins {
     id 'idea'
     id "java"
     id "java-library"
-    id 'fabric-loom' version '1.10.+' apply false
+    id 'fabric-loom' version '1.11.+' apply false
 }
 
 def debugArgs = [
@@ -268,11 +268,7 @@ loom {
 
 subprojects {
     afterEvaluate {
-        loom.runs {
-            datagen {
-                ideConfigGenerated = true
-            }
-        }
+        loom.runs.findByName("datagen")?.setIdeConfigGenerated(true)
 
         tasks.named('remapJar', RemapJarTask) { // Targets the Fabric Loom task
             // Set output directory to root project's "output" folder
