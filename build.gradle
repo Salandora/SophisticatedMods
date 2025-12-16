@@ -103,6 +103,33 @@ repositories {
             includeGroup "net.blay09.mods"
         }
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                url =  "https://maven.blamejared.com/"
+            }
+        }
+        filter {
+            includeGroup "tschipp.carryon"
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Siphalor's Maven"
+                url = "https://maven.siphalor.de/"
+            }
+        }
+        filter {
+            includeGroup "de.siphalor"
+        }
+    }
+    maven {
+        url = uri("https://maven.bawnorton.com/releases")
+        content {
+            includeGroup("com.github.bawnorton.mixinsquared")
+        }
+    }
 }
 
 allprojects {
@@ -209,13 +236,16 @@ dependencies {
     modLocalRuntime("curse.maven:polytone-958094:7105946")
     localRuntime("net.objecthunter:exp4j:0.4.8")
 
+    // Carry On
+    modLocalRuntime("tschipp.carryon:carryon-fabric-${project.minecraft_version}:${project.carryon_version}")
+
     switch (accessory_mod.toLowerCase(Locale.ROOT)) {
         case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
         case "accessories":
             modLocalRuntime("io.wispforest:accessories-fabric:${project.accessories_version}")
-            modLocalRuntime("maven.modrinth:accessories-tc-layer:${project.accessories_tclayer_version}")
-            modLocalRuntime("org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}")
-            modLocalRuntime("org.ladysnake.cardinal-components-api:cardinal-components-entity:${project.cca_version}")
+            modLocalRuntime("maven.modrinth:accessories-compat-layer:${project.accessories_compat_version}")
+            modLocalRuntime("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.3.4")
+            modLocalRuntime("dev.emi:trinkets:$project.trinkets_version");
             logger.lifecycle("Accessories loaded"); break
     }
 
@@ -362,39 +392,42 @@ tasks.register('injectIntellijBeforeRun') {
         file(".idea/runConfigurations").exists()
     }
 
-    def runNames = loom.runs.collect { it.configName.replace(' ', '_').replace('.', '_') }
-    file(".idea/runConfigurations").eachFile { configFile ->
-        try {
-            if (!runNames.contains(configFile.name.replace('.xml', ''))) {
-                return
-            }
+    doLast {
+        def runNames = loom.runs.collect { it.configName.replace(' ', '_').replace('.', '_') }
+        file(".idea/runConfigurations").eachFile { configFile ->
+            try {
+                if (!runNames.contains(configFile.name.replace('.xml', ''))) {
+                    return
+                }
 
-            def xml = new groovy.xml.XmlParser().parse(configFile)
-            xml.each { config ->
-                if (config.@type == 'Application' && config.@factoryName == 'Application') {
-                    def method = config.find { it.@v == "2" } ?: config.appendNode('method', [v: "2"])
+                def xml = new groovy.xml.XmlParser().parse(configFile)
+                xml.each { config ->
+                    if (config.@type == 'Application' && config.@factoryName == 'Application') {
+                        def method = config.find { it.@v == "2" } ?: config.appendNode('method', [v: "2"])
 
-                    if (!method.find { it.@name == 'Gradle.BeforeRunTask' }) {
-                        method.appendNode('option', [
-                                name: 'Gradle.BeforeRunTask',
-                                enabled: 'true',
-                                tasks: 'fixIntelliJResources',
-                                externalProjectPath: '$PROJECT_DIR$'
-                        ])
+                        if (!method.find { it.@name == 'Gradle.BeforeRunTask' }) {
+                            method.appendNode('option', [
+                                    name               : 'Gradle.BeforeRunTask',
+                                    enabled            : 'true',
+                                    tasks              : 'fixIntelliJResources',
+                                    externalProjectPath: '$PROJECT_DIR$'
+                            ])
 
-                        // Write modified XML back
-                        def writer = new StringWriter()
-                        new groovy.xml.XmlNodePrinter(new PrintWriter(writer)).print(xml)
-                        configFile.text = writer.toString()
+                            // Write modified XML back
+                            def writer = new StringWriter()
+                            new groovy.xml.XmlNodePrinter(new PrintWriter(writer)).print(xml)
+                            configFile.text = writer.toString()
+                        }
                     }
                 }
+            } catch (Exception e) {
+                logger.warn("Failed to process ${configFile.name}: ${e.message}")
             }
-        } catch (Exception e) {
-            logger.warn("Failed to process ${configFile.name}: ${e.message}")
         }
     }
 }
 tasks.findByName('ideaSyncTask')?.finalizedBy(tasks.named('injectIntellijBeforeRun'))
+
 tasks.register('generateChangelog') {
     doLast {
         subprojects.each {
