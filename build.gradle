@@ -121,6 +121,11 @@ dependencies {
     // Modmenu
     modLocalRuntime("com.terraformersmc:modmenu:$project.modmenu_version")
 
+    // Tom's Storage Network
+    modLocalRuntime("maven.modrinth:toms-storage:${project.toms_storage_version}")
+    modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}")
+    modLocalRuntime("dev.onyxstudios.cardinal-components-api:cardinal-components-block:${project.cca_version}")
+
     // Open Parties and Claims
     //modLocalRuntime("curse.maven:open-parties-and-claims-636608:${project.opac_version}")
 
@@ -154,8 +159,8 @@ dependencies {
     modLocalRuntime("curse.maven:cupboard-326652:5470034")
 
     // Polytone
-    modLocalRuntime("curse.maven:polytone-958094:7035028")
-    localRuntime("net.objecthunter:exp4j:0.4.8")
+    //modLocalRuntime("curse.maven:polytone-958094:7035028")
+    //localRuntime("net.objecthunter:exp4j:0.4.8")
 
     switch (accessory_mod.toLowerCase(Locale.ROOT)) {
         case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
