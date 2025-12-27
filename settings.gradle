@@ -14,8 +14,4 @@ include 'SophisticatedBackpacks'
 include 'SophisticatedStorage'
 include 'SophisticatedStorageInMotion'
 
-includeBuild('SophisticatedFabricIntegrations') {
-    dependencySubstitution {
-        substitute module('com.github.salandora:SophisticatedFabricIntegrations') using project(':')
-    }
-}
+include('SophisticatedFabricIntegrations')
