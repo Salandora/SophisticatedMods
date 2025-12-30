@@ -98,6 +98,25 @@ repositories {
 
 allprojects {
     apply plugin: "fabric-loom"
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = 'UTF-8'
+        it.options.release = 17
+        javaCompiler = javaToolchains.compilerFor {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    java {
+        // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+        // if it is present.
+        // If you remove this line, sources will not be generated.
+        withSourcesJar()
+
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        toolchain.languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 configurations {
@@ -352,35 +371,37 @@ tasks.register('injectIntellijBeforeRun') {
         file(".idea/runConfigurations").exists()
     }
 
-    def runNames = loom.runs.collect { it.configName.replace(' ', '_').replace('.', '_') }
-    file(".idea/runConfigurations").eachFile { configFile ->
-        try {
-            if (!runNames.contains(configFile.name.replace('.xml', ''))) {
-                return
-            }
+    doLast {
+        def runNames = loom.runs.collect { it.configName.replace(' ', '_').replace('.', '_') }
+        file(".idea/runConfigurations").eachFile { configFile ->
+            try {
+                if (!runNames.contains(configFile.name.replace('.xml', ''))) {
+                    return
+                }
 
-            def xml = new groovy.xml.XmlParser().parse(configFile)
-            xml.each { config ->
-                if (config.@type == 'Application' && config.@factoryName == 'Application') {
-                    def method = config.find { it.@v == "2" } ?: config.appendNode('method', [v: "2"])
+                def xml = new groovy.xml.XmlParser().parse(configFile)
+                xml.each { config ->
+                    if (config.@type == 'Application' && config.@factoryName == 'Application') {
+                        def method = config.find { it.@v == "2" } ?: config.appendNode('method', [v: "2"])
 
-                    if (!method.find { it.@name == 'Gradle.BeforeRunTask' }) {
-                        method.appendNode('option', [
-                                name: 'Gradle.BeforeRunTask',
-                                enabled: 'true',
-                                tasks: 'fixIntelliJResources',
-                                externalProjectPath: '$PROJECT_DIR$'
-                        ])
+                        if (!method.find { it.@name == 'Gradle.BeforeRunTask' }) {
+                            method.appendNode('option', [
+                                    name               : 'Gradle.BeforeRunTask',
+                                    enabled            : 'true',
+                                    tasks              : 'fixIntelliJResources',
+                                    externalProjectPath: '$PROJECT_DIR$'
+                            ])
 
-                        // Write modified XML back
-                        def writer = new StringWriter()
-                        new groovy.xml.XmlNodePrinter(new PrintWriter(writer)).print(xml)
-                        configFile.text = writer.toString()
+                            // Write modified XML back
+                            def writer = new StringWriter()
+                            new groovy.xml.XmlNodePrinter(new PrintWriter(writer)).print(xml)
+                            configFile.text = writer.toString()
+                        }
                     }
                 }
+            } catch (Exception e) {
+                logger.warn("Failed to process ${configFile.name}: ${e.message}")
             }
-        } catch (Exception e) {
-            logger.warn("Failed to process ${configFile.name}: ${e.message}")
         }
     }
 }
