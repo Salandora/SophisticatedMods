@@ -9,7 +9,7 @@ pluginManagement {
 
 rootProject.name = 'Sophisticated-fabric'
 
-include 'SophisticatedLibrary'
+include 'SophisticatedFabricLib'
 include 'SophisticatedCore'
 include 'SophisticatedBackpacks'
 //include 'SophisticatedBackpacksCreateIntegration'
