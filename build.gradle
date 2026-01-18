@@ -6,7 +6,7 @@ plugins {
     id 'idea'
     id "java"
     id "java-library"
-    id 'fabric-loom' version '1.11.+' apply false
+    id 'fabric-loom' version '1.14.+' apply false
 }
 
 def debugArgs = [

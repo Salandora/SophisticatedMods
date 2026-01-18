@@ -13,6 +13,3 @@
 [submodule "SophisticatedFabricIntegrations"]
 	path = SophisticatedFabricIntegrations
 	url = git@github.com:Salandora/SophisticatedFabricIntegrations.git
-[submodule "SophisticatedFabricLib"]
-	path = SophisticatedFabricLib
-	url = git@github.com:Salandora/SophisticatedFabricLib.git
