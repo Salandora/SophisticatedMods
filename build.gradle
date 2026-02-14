@@ -242,6 +242,10 @@ dependencies {
     // QuickBench
     modLocalRuntime("curse.maven:quickbench-914551:${project.quickbench_version}")
 
+    // TechReborn
+    modLocalRuntime("curse.maven:techreborn-233564:${project.techreborn_version}")
+    modLocalRuntime("curse.maven:reborncore-237903:${project.reborncore_version}")
+
     // Oritech
     modLocalRuntime("curse.maven:oritech-1030830:${project.oritech_version}")
     modLocalRuntime("dev.architectury:architectury-fabric:$project.architectury_api_version")
