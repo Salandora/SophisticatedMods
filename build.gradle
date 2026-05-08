@@ -73,8 +73,17 @@ repositories {
     }
     maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
     maven { url = 'https://maven.wispforest.io/releases' } // Accessories
-    maven { url = "https://mvn.devos.one/releases" } // Porting Lib releases
-    maven { url = "https://mvn.devos.one/snapshots" } // Create and several dependencies
+
+    maven { url = "https://mvn.devos.one/releases" } // Create, Porting Lib
+    maven { url = "https://mvn.devos.one/snapshots" } // Porting Lib
+    maven {
+        url = "https://maven.createmod.net"
+        content {
+            includeGroupByRegex "net.createmod.*"
+            includeGroupByRegex "dev.engine-room.*"
+        }
+    }
+
     maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
 
     maven {
@@ -138,7 +147,7 @@ dependencies {
     modLocalRuntime("maven.modrinth:midnightlib:${project.midnightlib_version}-fabric")
 
     // Create - dependencies are added transitively
-    modImplementation("com.simibubi.create:create-fabric-$minecraft_version:$create_version")
+    modImplementation("com.simibubi.create:create-fabric:$create_version")
 
     // Legendary Tooltips
     /*modLocalRuntime("curse.maven:legendary-tooltips-fabric-542478:6400658")
