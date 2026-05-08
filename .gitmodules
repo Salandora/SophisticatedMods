@@ -13,3 +13,9 @@
 [submodule "SophisticatedStorageInMotion"]
 	path = SophisticatedStorageInMotion
 	url = git@github.com:Salandora/SophisticatedStorageInMotion.git
+[submodule "SophisticatedBackpacksCreateIntegration"]
+	path = SophisticatedBackpacksCreateIntegration
+	url = https://github.com/Salandora/SophisticatedBackpacksCreateIntegration.git
+[submodule "SophisticatedStorageCreateIntegration"]
+	path = SophisticatedStorageCreateIntegration
+	url = https://github.com/Salandora/SophisticatedStorageCreateIntegration.git

@@ -10,5 +10,7 @@ rootProject.name = 'Sophisticated-fabric'
 
 include 'SophisticatedCore'
 include 'SophisticatedBackpacks'
+// include 'SophisticatedBackpacksCreateIntegration'
 include 'SophisticatedStorage'
 include 'SophisticatedStorageInMotion'
+// include 'SophisticatedStorageCreateIntegration'
