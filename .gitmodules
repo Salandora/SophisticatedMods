@@ -19,3 +19,6 @@
 [submodule "SophisticatedStorageCreateIntegration"]
 	path = SophisticatedStorageCreateIntegration
 	url = https://github.com/Salandora/SophisticatedStorageCreateIntegration.git
+[submodule "SophisticatedFabricLib"]
+	path = SophisticatedFabricLib
+	url = https://github.com/Salandora/SophisticatedFabricLib.git
