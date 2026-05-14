@@ -132,7 +132,7 @@ repositories {
     }
 
     maven {
-        url "https://maven.twelveiterations.com/repository/maven-public/"
+        url = "https://maven.twelveiterations.com/repository/maven-public/"
 
         content {
             includeGroup "net.blay09.mods"
@@ -142,13 +142,13 @@ repositories {
     maven {url = "https://maven.impactdev.net/repository/development/" }
 
     maven {
-        url 'https://ldtteam.jfrog.io/artifactory/communi-suggestu-maven'
-        name 'Communi-Suggestu Maven'
+        url = 'https://ldtteam.jfrog.io/artifactory/communi-suggestu-maven'
+        name = 'Communi-Suggestu Maven'
     }
 
     maven {
-        url 'https://ldtteam.jfrog.io/artifactory/chisels-and-bits'
-        name 'Chisels and Bits'
+        url = 'https://ldtteam.jfrog.io/artifactory/chisels-and-bits'
+        name = 'Chisels and Bits'
     }
 
     exclusiveContent {
