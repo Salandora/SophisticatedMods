@@ -158,7 +158,8 @@ dependencies {
     modLocalRuntime("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${project.forge_config_api_port_version}")
 
     // Modmenu
-    modLocalRuntime("com.terraformersmc:modmenu:${project.modmenu_version}")
+    //modLocalRuntime("com.terraformersmc:modmenu:${project.modmenu_version}")
+    modLocalRuntime("curse.maven:modmenu-308702:5162837")
 
     // Tom's Storage Network
     modLocalRuntime("maven.modrinth:toms-storage:${project.toms_storage_version}")
@@ -216,7 +217,8 @@ dependencies {
     modLocalRuntime("dev.isxander:yet-another-config-lib:${project.yacl_version}")
 
     switch (accessory_mod.toLowerCase(Locale.ROOT)) {
-        case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
+        //case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
+        case "trinkets": modLocalRuntime("curse.maven:trinkets-341284:5173501"); logger.lifecycle("Trinkets loaded"); break
         case "accessories":
             modLocalRuntime("io.wispforest:accessories-fabric:${project.accessories_version}")
             modLocalRuntime("maven.modrinth:accessories-tc-layer:${project.accessories_tclayer_version}")
@@ -226,7 +228,8 @@ dependencies {
     }
 
     switch (recipe_viewer.toLowerCase(Locale.ROOT)) {
-        case "emi": modLocalRuntime("dev.emi:emi-fabric:$project.emi_version"); logger.lifecycle("EMI loaded"); break
+        // case "emi": modLocalRuntime("dev.emi:emi-fabric:$project.emi_version"); logger.lifecycle("EMI loaded"); break
+        case "emi": modLocalRuntime("curse.maven:emi-580555:8081375"); logger.lifecycle("EMI loaded"); break
         case "jei": modLocalRuntime("mezz.jei:jei-$project.minecraft_version-fabric:$project.jei_version"); logger.lifecycle("JEI loaded"); break
         case "rei": modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$project.rei_version"); logger.lifecycle("REI loaded"); break
         case "disabled": break
