@@ -217,8 +217,8 @@ dependencies {
     modLocalRuntime("dev.isxander:yet-another-config-lib:${project.yacl_version}")
 
     switch (accessory_mod.toLowerCase(Locale.ROOT)) {
-        //case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
-        case "trinkets": modLocalRuntime("curse.maven:trinkets-341284:5173501"); logger.lifecycle("Trinkets loaded"); break
+        case "trinkets": modLocalRuntime("dev.emi:trinkets:$project.trinkets_version"); logger.lifecycle("Trinkets loaded"); break
+        //case "trinkets": modLocalRuntime("curse.maven:trinkets-341284:5173501"); logger.lifecycle("Trinkets loaded"); break
         case "accessories":
             modLocalRuntime("io.wispforest:accessories-fabric:${project.accessories_version}")
             modLocalRuntime("maven.modrinth:accessories-tc-layer:${project.accessories_tclayer_version}")
